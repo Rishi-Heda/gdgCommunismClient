@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { mockJobs, mockNodes, mockActivity, mockWealth } from '../data/mock';
+import { mockJobs, mockNodes, mockActivity } from '../data/mock';
 import { Link } from 'react-router-dom';
 import ScrambleText from '../components/common/ScrambleText';
+import { useWealth } from '../context/WealthContext';
 import {
   Users,
   Settings,
@@ -18,12 +19,13 @@ import {
 
 const Dashboard = () => {
   const [isContributing, setIsContributing] = useState(false);
+  const { wealth } = useWealth();
 
   const stats = [
     { label: 'Active Contributors', value: '1,248', trend: '+12 today', icon: Users },
     { label: 'Jobs Running', value: '412', trend: '+5 today', icon: Settings },
     { label: 'Network Points', value: '4,280', trend: 'Global Avg', icon: Hexagon },
-    { label: 'Credits Balance', value: mockWealth.mindCredits.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Credits Balance', value: wealth.mindCredits.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
     { label: 'Active Tasks', value: '42', trend: '1.2s avg latency', icon: Clock },
   ];
 
@@ -260,7 +262,7 @@ const Dashboard = () => {
 
             <div className="p-6 pb-4 border-b border-[#222]">
               <div className="text-4xl font-mono font-bold text-accent-primary">
-                <ScrambleText text={mockWealth.mindCredits.toLocaleString()} />
+                <ScrambleText text={wealth.mindCredits.toLocaleString()} />
               </div>
               <p className="text-[10px] font-mono text-text-muted uppercase mt-1 tracking-widest">CREDITS AVAILABLE</p>
             </div>

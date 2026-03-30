@@ -1,10 +1,12 @@
 import React from 'react';
 import { Search, Bell, User, ChevronRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useWealth } from '../../context/WealthContext';
 
 const Topbar = () => {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);
+  const { wealth } = useWealth();
 
   return (
     <header className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-background-base/80 backdrop-blur-md border-b border-[#222] z-30 px-6 flex items-center justify-between">
@@ -35,7 +37,7 @@ const Topbar = () => {
           <div className="flex items-center gap-3 pl-4 border-l border-[#222]">
             <div className="text-right hidden sm:block">
               <div className="text-xs font-medium text-text-primary">Research_Admin</div>
-              <div className="text-[10px] font-mono text-text-muted">Balance: 2,850.50 HC</div>
+              <div className="text-[10px] font-mono text-text-muted">Balance: {wealth.hiveCoins.toLocaleString(undefined, { maximumFractionDigits: 2 })} HC</div>
             </div>
             <div className="w-8 h-8 rounded-full bg-surface-elevated border border-[#222] flex items-center justify-center overflow-hidden">
               <User className="w-5 h-5 text-text-muted" />

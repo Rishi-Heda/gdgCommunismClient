@@ -14,12 +14,13 @@ import {
   LogOut,
   Fingerprint
 } from 'lucide-react';
-import { mockWealth } from '../data/mock';
+import { useWealth } from '../context/WealthContext';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('identity');
   const [nodeActive, setNodeActive] = useState(true);
   const [computeAllocation, setComputeAllocation] = useState(75);
+  const { wealth } = useWealth();
 
   const tabs = [
     { id: 'identity', label: 'Identity', icon: User },
@@ -191,12 +192,12 @@ const Settings = () => {
             <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-[28px] p-4 pr-6">
               <div className="flex flex-col items-end">
                 <div className="text-[9px] font-mono text-text-muted uppercase leading-none">Wallet Status</div>
-                <div className="text-lg font-black italic text-[#FAFF00]">{mockWealth.mindCredits.toLocaleString()} MC</div>
+                <div className="text-lg font-black italic text-[#FAFF00]">{wealth.mindCredits.toLocaleString()} MC</div>
               </div>
               <div className="w-[1px] h-8 bg-white/10" />
               <div className="flex flex-col items-end">
                 <div className="text-[9px] font-mono text-text-muted uppercase leading-none">Market Assets</div>
-                <div className="text-lg font-black italic text-[#888]">{mockWealth.hiveCoins.toLocaleString()} HC</div>
+                <div className="text-lg font-black italic text-[#888]">{wealth.hiveCoins.toLocaleString()} HC</div>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { mockWealth } from '../data/mock';
+import { useWealth } from '../context/WealthContext';
 import { 
   ShoppingBag, 
   Trash2, 
@@ -16,9 +16,10 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal } = useCart();
+  const { wealth } = useWealth();
   const navigate = useNavigate();
   const totalCost = getCartTotal();
-  const newBalance = mockWealth.hiveCoins - totalCost;
+  const newBalance = wealth.hiveCoins - totalCost;
 
   if (cartItems.length === 0) {
     return (
@@ -118,11 +119,11 @@ const Cart = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
                   <div className="text-[9px] font-mono uppercase tracking-widest text-text-muted mb-1">Hive Coins</div>
-                  <div className="text-lg font-bold">{mockWealth.hiveCoins.toLocaleString()}</div>
+                  <div className="text-lg font-bold">{wealth.hiveCoins.toLocaleString()}</div>
                 </div>
                 <div className="bg-black/40 p-4 rounded-2xl border border-white/5">
                   <div className="text-[9px] font-mono uppercase tracking-widest text-text-muted mb-1">Mind Credits</div>
-                  <div className="text-lg font-bold">{mockWealth.mindCredits.toLocaleString()}</div>
+                  <div className="text-lg font-bold">{wealth.mindCredits.toLocaleString()}</div>
                 </div>
               </div>
 

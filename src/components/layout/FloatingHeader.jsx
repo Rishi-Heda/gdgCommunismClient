@@ -16,14 +16,15 @@ import {
   Info,
   ShoppingBag
 } from 'lucide-react';
-import { mockWealth } from '../../data/mock';
 import { useCart } from '../../context/CartContext';
+import { useWealth } from '../../context/WealthContext';
 
 const FloatingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { cartItems } = useCart();
+  const { wealth } = useWealth();
   const cartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   useEffect(() => {
@@ -93,11 +94,11 @@ const FloatingHeader = () => {
             <div className="hidden lg:flex items-center gap-2 mr-1">
               <div className="flex flex-col items-end">
                 <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#FAFF00]">
-                  <span>{mockWealth.mindCredits.toLocaleString()}</span>
+                  <span>{wealth.mindCredits.toLocaleString()}</span>
                   <span className="opacity-50">MC</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-[#888]">
-                  <span>{mockWealth.hiveCoins.toLocaleString()}</span>
+                  <span>{wealth.hiveCoins.toLocaleString()}</span>
                   <span className="opacity-50 text-[8px]">HC</span>
                 </div>
               </div>

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Wallet, TrendingUp, PieChart, Clock, CreditCard, ChevronRight, Zap, Target, Layers } from 'lucide-react';
 import ScrambleText from '../components/common/ScrambleText';
-
-import { mockWealth } from '../data/mock';
+import { useWealth } from '../context/WealthContext';
 
 const Credits = () => {
-  const mcBalance = mockWealth.mindCredits.toLocaleString();
-  const hcBalance = mockWealth.hiveCoins.toLocaleString();
+  const { wealth } = useWealth();
+  const mcBalance = wealth.mindCredits.toLocaleString();
+  const hcBalance = wealth.hiveCoins.toLocaleString();
   
   const usageStats = [
     { label: 'AI Inference', percentage: 62, icon: Zap, color: '#FAFF00' },

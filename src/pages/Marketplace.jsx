@@ -11,52 +11,24 @@ import {
   Minus
 } from 'lucide-react';
 import ScrollingTape from '../components/marketplace/ScrollingTape';
-import { mockWealth } from '../data/mock';
 import { useCart } from '../context/CartContext';
+import { useWealth } from '../context/WealthContext';
 
 const Marketplace = () => {
   const [activeCategory, setActiveCategory] = useState('All Assets');
   const [exchangeAmount, setExchangeAmount] = useState(1000);
-  const [balances, setBalances] = useState({
-    hiveCoins: mockWealth.hiveCoins,
-    mindCredits: mockWealth.mindCredits,
-  });
   const [exchangeNotice, setExchangeNotice] = useState(null);
   const { cartItems, addToCart, updateQuantity } = useCart();
+  const { wealth, exchangeRate, exchangeHCToMC } = useWealth();
 
-  const exchangeRate = mockWealth.exchangeRate;
   const normalizedExchangeAmount = Number.isFinite(exchangeAmount) ? exchangeAmount : 0;
   const mcReceive = normalizedExchangeAmount > 0 ? normalizedExchangeAmount / exchangeRate : 0;
 
   const handleExchange = () => {
-    const amount = Number(exchangeAmount);
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      setExchangeNotice({
-        type: 'error',
-        text: 'ENTER A VALID HIVE COIN AMOUNT TO EXCHANGE.',
-      });
-      return;
-    }
-
-    if (amount > balances.hiveCoins) {
-      setExchangeNotice({
-        type: 'error',
-        text: 'INSUFFICIENT HIVE COINS FOR THIS EXCHANGE.',
-      });
-      return;
-    }
-
-    const received = amount / exchangeRate;
-
-    setBalances((prev) => ({
-      hiveCoins: Number((prev.hiveCoins - amount).toFixed(2)),
-      mindCredits: Number((prev.mindCredits + received).toFixed(2)),
-    }));
-
+    const result = exchangeHCToMC(exchangeAmount);
     setExchangeNotice({
-      type: 'success',
-      text: `EXCHANGE COMPLETE: ${amount.toLocaleString()} HC → ${received.toLocaleString(undefined, { maximumFractionDigits: 2 })} MC`,
+      type: result.success ? 'success' : 'error',
+      text: result.message,
     });
   };
 
@@ -185,7 +157,7 @@ const Marketplace = () => {
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-end">
                       <span className="text-xs font-mono font-bold text-[#FAFF00]">HC</span>
                       <span className="text-[10px] text-white/50 underline cursor-pointer hover:text-white transition-colors" onClick={() => {
-                        setExchangeAmount(balances.hiveCoins);
+                        setExchangeAmount(wealth.hiveCoins);
                         if (exchangeNotice) {
                           setExchangeNotice(null);
                         }
@@ -262,11 +234,11 @@ const Marketplace = () => {
             <div className="space-y-4">
               <div className="p-6 rounded-3xl bg-black inverted-dark-container border border-white/5">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#FAFF00]/70 mb-1">Hive Coins (HC)</div>
-                <div className="text-3xl font-black tracking-tighter text-white">{balances.hiveCoins.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div className="text-3xl font-black tracking-tighter text-white">{wealth.hiveCoins.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
               <div className="p-6 rounded-3xl bg-white border border-black/10">
                 <div className="text-[10px] font-mono uppercase tracking-widest opacity-50 mb-1">Mind Credits (MC)</div>
-                <div className="text-3xl font-black tracking-tighter">{balances.mindCredits.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div className="text-3xl font-black tracking-tighter">{wealth.mindCredits.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
             </div>
           </div>

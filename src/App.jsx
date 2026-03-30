@@ -13,34 +13,37 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Settings from './pages/Settings';
 import { CartProvider } from './context/CartContext';
+import { WealthProvider } from './context/WealthContext';
 
 function App() {
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Landing Page */}
-          <Route path="/" element={<LandingPage />} />
-          
-          {/* App Shell */}
-          <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/submit" element={<SubmitJob />} />
-            <Route path="/jobs" element={<JobsList />} />
-            <Route path="/jobs/:id" element={<JobDetails />} />
-            <Route path="/contributors" element={<Contributors />} />
-            <Route path="/credits" element={<Credits />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
-  
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </CartProvider>
+    <WealthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Landing Page */}
+            <Route path="/" element={<LandingPage />} />
+            
+            {/* App Shell */}
+            <Route element={<AppLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/submit" element={<SubmitJob />} />
+              <Route path="/jobs" element={<JobsList />} />
+              <Route path="/jobs/:id" element={<JobDetails />} />
+              <Route path="/contributors" element={<Contributors />} />
+              <Route path="/credits" element={<Credits />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
+    
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </WealthProvider>
   );
 }
 

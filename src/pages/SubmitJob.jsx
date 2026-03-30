@@ -10,8 +10,8 @@ import {
   Clock,
   ArrowRight
 } from 'lucide-react';
-import { mockWealth } from '../data/mock';
 import ScrambleText from '../components/common/ScrambleText';
+import { useWealth } from '../context/WealthContext';
 
 const SubmitJob = () => {
   const [jobType, setJobType] = useState('AI Training');
@@ -20,6 +20,7 @@ const SubmitJob = () => {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = React.useRef(null);
+  const { wealth } = useWealth();
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -264,7 +265,7 @@ const SubmitJob = () => {
             <div className="flex items-center gap-3">
               <div className="text-[10px] font-mono text-[#555] uppercase tracking-widest">Account Balance:</div>
               <div className="text-xl font-bold font-mono">
-                <ScrambleText text={mockWealth.mindCredits.toLocaleString()} /> MC
+                <ScrambleText text={wealth.mindCredits.toLocaleString()} /> MC
               </div>
             </div>
             
