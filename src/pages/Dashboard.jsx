@@ -1,12 +1,14 @@
 import React from 'react';
-import { mockJobs, mockNodes, mockActivity, mockCredits } from '../data/mock';
+import { mockJobs, mockNodes, mockActivity, mockWealth } from '../data/mock';
 import { 
   Users, 
   Settings, 
   TrendingUp, 
   ArrowUpRight, 
   MoreHorizontal,
-  LayoutGrid
+  LayoutGrid,
+  Hexagon,
+  Clock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ScrambleText from '../components/common/ScrambleText';
@@ -15,8 +17,9 @@ const Dashboard = () => {
   const stats = [
     { label: 'Active Contributors', value: '1,248', trend: '+12 today', icon: Users },
     { label: 'Jobs Running', value: '412', trend: '+5 today', icon: Settings },
-    { label: 'Compute Hours', value: '18.4k', trend: '+1.2k today', icon: TrendingUp },
-    { label: 'Credits Earned', value: mockCredits.balance.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Network Points', value: '4,280', trend: 'Global Avg', icon: Hexagon },
+    { label: 'Credits Balance', value: mockWealth.mindCredits.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Active Tasks', value: '42', trend: '1.2s avg latency', icon: Clock },
   ];
 
   const getStatusColor = (status) => {

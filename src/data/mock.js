@@ -136,8 +136,10 @@ export const mockActivity = [
   { id: 6, type: 'JOB', text: 'Job "Stable Diffusion LoRA" completed successfully', time: '4h ago', color: 'green' },
 ];
 
-export const mockCredits = {
-  balance: 2850.50,
-  earnedToday: 142.50,
-  projectedMonthly: 4250.00,
+export const mockWealth = {
+  mindCredits: 2450.00,
+  hiveCoins: 12800.00,
+  earnedToday: 450.00,
+  projectedMonthly: 8500.00,
+  exchangeRate: 10, // 10 HC = 1 MC
 };

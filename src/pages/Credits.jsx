@@ -2,8 +2,11 @@ import React from 'react';
 import { Wallet, TrendingUp, PieChart, Clock, CreditCard, ChevronRight, Zap, Target, Layers } from 'lucide-react';
 import ScrambleText from '../components/common/ScrambleText';
 
+import { mockWealth } from '../data/mock';
+
 const Credits = () => {
-  const currentBalance = "12,450.00";
+  const mcBalance = mockWealth.mindCredits.toLocaleString();
+  const hcBalance = mockWealth.hiveCoins.toLocaleString();
   
   const usageStats = [
     { label: 'AI Inference', percentage: 62, icon: Zap, color: '#FAFF00' },
@@ -53,18 +56,33 @@ const Credits = () => {
         <div className="relative p-10 rounded-[32px] bg-surface-card border border-[#222] overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-accent-primary/5 blur-[100px] -mr-48 -mt-48 transition-all duration-700 pointer-events-none" />
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-text-muted font-mono tracking-widest text-[10px] uppercase">
-                <Wallet className="w-3 h-3 text-accent-primary" />
-                Current Balance
-              </div>
-              <div className="flex items-baseline gap-3">
-                <h1 className="text-6xl md:text-7xl font-black tracking-tighter">
-                  <ScrambleText text={currentBalance} />
-                </h1>
-                <span className="text-2xl font-mono text-accent-primary font-bold">HC</span>
-              </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10 w-full">
+            <div className="flex flex-col md:flex-row gap-12">
+               <div>
+                 <div className="flex items-center gap-2 mb-3 text-text-muted font-mono tracking-widest text-[10px] uppercase">
+                   <Zap className="w-3 h-3 text-accent-primary" />
+                   Compute Fuel (MC)
+                 </div>
+                 <div className="flex items-baseline gap-3">
+                   <h1 className="text-5xl md:text-6xl font-black tracking-tighter">
+                     <ScrambleText text={mcBalance} />
+                   </h1>
+                   <span className="text-xl font-mono text-accent-primary font-bold">MC</span>
+                 </div>
+               </div>
+
+               <div className="md:border-l md:border-white/10 md:pl-12">
+                 <div className="flex items-center gap-2 mb-3 text-text-muted font-mono tracking-widest text-[10px] uppercase">
+                   <Wallet className="w-3 h-3 text-text-secondary" />
+                   Earning Rewards (HC)
+                 </div>
+                 <div className="flex items-baseline gap-3">
+                   <h1 className="text-5xl md:text-6xl font-black tracking-tighter opacity-80">
+                     <ScrambleText text={hcBalance} />
+                   </h1>
+                   <span className="text-xl font-mono text-text-muted font-bold">HC</span>
+                 </div>
+               </div>
             </div>
             
             <button className="bg-accent-primary text-black px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_40px_rgba(250,255,0,0.1)] group">
@@ -148,8 +166,8 @@ const Credits = () => {
         {/* Pricing Layout */}
         <div className="flex flex-col gap-6">
           <h2 className="text-2xl font-bold flex items-center gap-3 px-2">
-            <Zap className="w-6 h-6 text-accent-primary" />
-             HiveCoin Packages
+            <CreditCard className="w-6 h-6 text-accent-primary" />
+             Purchase Mind Credits
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -170,7 +188,7 @@ const Credits = () => {
                   <span className="text-4xl font-black tracking-tighter">
                     <ScrambleText text={pkg.amount} />
                   </span>
-                  <span className="text-sm font-mono text-accent-primary font-bold">HC</span>
+                  <span className="text-sm font-mono text-accent-primary font-bold">MC</span>
                 </div>
                 
                 <div className="text-2xl font-black mb-6">
@@ -212,7 +230,9 @@ const Credits = () => {
                   <div key={i} className="grid grid-cols-4 gap-4 p-4 border-b border-[#222]/50 hover:bg-surface-elevated/50 transition-colors">
                     <div className="text-sm text-text-secondary font-mono">{item.date}</div>
                     <div className="text-sm font-semibold">{item.action}</div>
-                    <div className={`text-sm font-mono font-bold ${item.amount.startsWith('+') ? 'text-status-green' : 'text-text-primary'}`}>{item.amount}</div>
+                    <div className={`text-sm font-mono font-bold ${item.amount.startsWith('+') ? 'text-status-green' : 'text-text-primary'}`}>
+                       {item.amount.replace('HC', item.action.includes('Purchase') ? 'MC' : 'HC')}
+                    </div>
                     <div className="text-sm text-right flex items-center justify-end gap-2">
                        <div className={`w-1.5 h-1.5 rounded-full ${item.status === 'Completed' || item.status === 'Successful' ? 'bg-status-green' : 'bg-status-yellow'}`} />
                        <span className="text-text-secondary text-xs">{item.status}</span>

@@ -1,12 +1,18 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import FloatingHeader from './FloatingHeader';
 
 const AppLayout = () => {
+  const location = useLocation();
+  const isInverted = location.pathname === '/marketplace';
+
   return (
-    <div className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in selection:bg-accent-primary selection:text-background-base font-sans">
+    <div 
+      className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in selection:bg-accent-primary selection:text-background-base font-sans transition-colors duration-700"
+      data-theme={isInverted ? 'inverted' : 'default'}
+    >
       <div className="noise" />
       <FloatingHeader />
       <div className="flex flex-col min-h-screen">
