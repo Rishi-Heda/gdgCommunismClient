@@ -52,12 +52,45 @@ export const WealthProvider = ({ children }) => {
     };
   };
 
+  const spendHiveCoins = (amount) => {
+    const normalizedAmount = Number(amount);
+
+    if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0) {
+      return {
+        success: false,
+        missing: 0,
+        message: 'INVALID CHECKOUT AMOUNT.',
+      };
+    }
+
+    if (normalizedAmount > wealth.hiveCoins) {
+      const missing = Number((normalizedAmount - wealth.hiveCoins).toFixed(2));
+      return {
+        success: false,
+        missing,
+        message: `TRANSACTION FAILED: YOU NEED ${missing.toLocaleString(undefined, { maximumFractionDigits: 2 })} MORE HIVECOINS.`,
+      };
+    }
+
+    setWealth((prev) => ({
+      ...prev,
+      hiveCoins: Number((prev.hiveCoins - normalizedAmount).toFixed(2)),
+    }));
+
+    return {
+      success: true,
+      missing: 0,
+      message: `TRANSACTION SUCCESSFUL: ${normalizedAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} HIVECOINS DEDUCTED.`,
+    };
+  };
+
   return (
     <WealthContext.Provider
       value={{
         wealth,
         exchangeRate,
         exchangeHCToMC,
+        spendHiveCoins,
       }}
     >
       {children}
