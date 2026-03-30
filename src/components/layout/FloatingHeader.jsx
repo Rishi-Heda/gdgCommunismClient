@@ -50,7 +50,7 @@ const FloatingHeader = () => {
         {/* Isolated Logo Pill */}
         <Link to="/" className="w-14 h-14 bg-[#000] rounded-full border border-white/5 flex items-center justify-center group shadow-2xl hover:border-accent-primary/30 transition-all duration-500 overflow-hidden relative">
           <div className="absolute inset-0 bg-accent-glow opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Hexagon className="header-logo-icon w-6 h-6 text-accent-primary group-hover:rotate-90 transition-transform duration-700 relative z-10" />
+          <Hexagon className="header-logo-icon w-6 h-6 text-accent-primary group-hover:animate-spin-slow relative z-10" />
         </Link>
 
         {/* Main Navigation Capsule */}
