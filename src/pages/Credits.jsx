@@ -92,6 +92,41 @@ const Credits = () => {
           </div>
         </div>
 
+        {/* Credit System Explanation Card */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-8 relative overflow-hidden group hover:border-[#FAFF00]/20 transition-all duration-500">
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FAFF00]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FAFF00]/10 flex items-center justify-center border border-[#FAFF00]/20">
+                <Zap className="w-5 h-5 text-[#FAFF00]" />
+              </div>
+              <h3 className="text-lg font-bold font-mono tracking-tight text-white uppercase">
+                <ScrambleText text="MindCredits (MC) — Compute Fuel" />
+              </h3>
+            </div>
+            <p className="text-sm text-text-secondary leading-relaxed pl-1">
+              MindCredits are the operational fuel of the HiveMind. Use them to launch high-fidelity AI models, secure priority compute queues, and execute complex distributed tasks across the network. 
+              <span className="block mt-2 text-[#FAFF00] font-mono text-[10px] uppercase tracking-wider font-bold">Utility: Spending · Performance · Priority</span>
+            </p>
+          </div>
+
+          <div className="space-y-4 md:border-l md:border-white/10 md:pl-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FAFF00]/10 flex items-center justify-center border border-[#FAFF00]/20">
+                <Wallet className="w-5 h-5 text-[#FAFF00]" />
+              </div>
+              <h3 className="text-lg font-bold font-mono tracking-tight text-white uppercase">
+                <ScrambleText text="HiveCoins (HC) — Earning Rewards" />
+              </h3>
+            </div>
+            <p className="text-sm text-text-secondary leading-relaxed pl-1">
+              HiveCoins are the proof of your contribution. Earn them by providing GPU/CPU bandwidth, completing network-verified tasks, or participating in the HiveMind economy.
+              <span className="block mt-2 text-[#FAFF00] font-mono text-[10px] uppercase tracking-wider font-bold">Utility: Earning · Liquidity · Redemption</span>
+            </p>
+          </div>
+        </div>
+
         {/* Insights Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Usage Stats */}
