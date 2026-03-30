@@ -12,7 +12,7 @@ const AppLayout = () => {
 
   return (
     <div
-      className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in selection:bg-accent-primary selection:text-background-base font-sans transition-colors duration-700"
+      className="min-h-screen bg-background-base text-text-primary overflow-x-hidden selection:bg-accent-primary selection:text-background-base font-sans transition-colors duration-700"
       data-theme={isInverted ? 'inverted' : 'default'}
     >
       <div className="relative min-h-screen bg-background-base text-text-primary overflow-x-hidden selection:bg-accent-primary selection:text-background-base font-sans">
@@ -29,7 +29,7 @@ const AppLayout = () => {
 
         {/* GLOBAL SIDE NAVIGATION (DASHBOARD ONLY) - Outside animated container for true fixed positioning */}
         {isDashboard && (
-          <nav className="fixed right-0 top-1/2 -translate-y-1/2 z-[100] group/nav">
+          <nav className="fixed right-6 top-1/2 -translate-y-1/2 z-[100] group/nav">
             <div className="flex flex-col gap-3 p-2 bg-black/60 backdrop-blur-xl border-y border-l border-[#222] rounded-l-2xl group-hover/nav:border-accent-primary/50 group-hover/nav:bg-black/90 transition-all duration-500 shadow-2xl w-[72px] group-hover/nav:w-[260px] overflow-hidden">
               <Link
                 to="/submit"
