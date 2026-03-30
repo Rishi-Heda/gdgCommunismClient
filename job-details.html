@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stitch - Job Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      background-color: #0e0e0e;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+    }
+    .noise-layer {
+      position: relative;
+    }
+    .noise-layer::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.03;
+      z-index: 10;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+    .pulse-dot {
+      box-shadow: 0 0 0 0 rgba(114, 220, 255, 0.7);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(114, 220, 255, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(114, 220, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(114, 220, 255, 0); }
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #131313;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #262626;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #72dcff;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed-dim": "#f3f0ef",
+            "on-error": "#490006",
+            "outline-variant": "#494847",
+            "outline": "#777575",
+            "secondary": "#26fedc",
+            "background": "#0e0e0e",
+            "secondary-dim": "#00efce",
+            "surface-container-low": "#131313",
+            "tertiary": "#fcf9f8",
+            "on-tertiary-container": "#575656",
+            "inverse-primary": "#00687f",
+            "tertiary-container": "#edeaea",
+            "primary-dim": "#00c3ed",
+            "tertiary-dim": "#edeaea",
+            "on-tertiary-fixed": "#515050",
+            "secondary-fixed": "#26fedc",
+            "on-background": "#ffffff",
+            "primary-container": "#00d2ff",
+            "on-secondary-container": "#ddfff5",
+            "secondary-container": "#006b5b",
+            "on-tertiary-fixed-variant": "#6e6d6d",
+            "inverse-surface": "#fcf8f8",
+            "surface-bright": "#2c2c2c",
+            "on-error-container": "#ffa8a3",
+            "on-surface": "#ffffff",
+            "primary-fixed-dim": "#00c3ed",
+            "on-tertiary": "#605f5e",
+            "inverse-on-surface": "#565554",
+            "surface-container": "#1a1919",
+            "on-secondary": "#005d4f",
+            "primary": "#72dcff",
+            "surface-variant": "#262626",
+            "surface-tint": "#72dcff",
+            "secondary-fixed-dim": "#00efce",
+            "surface-container-lowest": "#000000",
+            "surface": "#0e0e0e",
+            "on-secondary-fixed": "#00483d",
+            "primary-fixed": "#00d2ff",
+            "tertiary-fixed": "#ffffff",
+            "on-primary-fixed-variant": "#004c5e",
+            "on-secondary-fixed-variant": "#006859",
+            "on-primary-container": "#004253",
+            "error-container": "#9f0519",
+            "on-primary": "#004c5e",
+            "surface-container-highest": "#262626",
+            "surface-dim": "#0e0e0e",
+            "on-surface-variant": "#adaaaa",
+            "error-dim": "#d7383b",
+            "on-primary-fixed": "#002c38",
+            "surface-container-high": "#201f1f",
+            "error": "#ff716c"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"],
+            "mono": ["JetBrains Mono"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col py-6 h-full w-64 border-r-0 bg-[#131313] dark:bg-[#131313] shadow-2xl shadow-[inset_-1px_0_0_0_rgba(255,255,255,0.05)] z-50">
+<div class="px-6 mb-10">
+<div class="text-xl font-black tracking-tighter text-[#72dcff] uppercase">Stitch</div>
+<div class="text-[10px] text-outline tracking-widest uppercase mt-1">Developer Terminal</div>
+</div>
+<nav class="flex-1 space-y-1 px-3">
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#a3a3a3] hover:text-[#72dcff] hover:bg-[#1a1919]/50 transition-all duration-300 cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#a3a3a3] hover:text-[#72dcff] hover:bg-[#1a1919]/50 transition-all duration-300 cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">add_task</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Submit Job</span>
+</div>
+<!-- ACTIVE TAB: Jobs -->
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#1a1919] text-[#72dcff] border-l-4 border-[#72dcff] shadow-[0_0_15px_rgba(114,220,255,0.1)] cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">list_alt</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Jobs</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#a3a3a3] hover:text-[#72dcff] hover:bg-[#1a1919]/50 transition-all duration-300 cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">engineering</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Workers</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#a3a3a3] hover:text-[#72dcff] hover:bg-[#1a1919]/50 transition-all duration-300 cursor-pointer active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Settings</span>
+</div>
+</nav>
+<div class="mt-auto px-3 space-y-1 pt-6 border-t border-surface-variant/30">
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#a3a3a3] hover:text-[#72dcff] hover:bg-[#1a1919]/50 transition-all duration-300 cursor-pointer">
+<span class="material-symbols-outlined text-lg">description</span>
+<span class="text-xs font-medium tracking-tight">Documentation</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-[#a3a3a3] hover:text-[#72dcff] hover:bg-[#1a1919]/50 transition-all duration-300 cursor-pointer">
+<span class="material-symbols-outlined text-lg">help</span>
+<span class="text-xs font-medium tracking-tight">Support</span>
+</div>
+<div class="mt-4 flex items-center gap-3 px-4 py-3 bg-surface-container rounded-xl">
+<div class="w-8 h-8 rounded bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-on-primary-container font-bold text-xs">JD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold text-on-surface truncate">J. DOE</p>
+<p class="text-[10px] text-outline truncate uppercase tracking-tighter">Root Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 h-screen flex flex-col bg-background">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between px-8 w-full h-14 bg-[#0e0e0e] border-b border-[#262626] relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-[#72dcff] after:to-[#26fedc]">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#72dcff]">terminal</span>
+<h1 class="font-['JetBrains_Mono'] tracking-tighter text-lg text-[#72dcff]">System Overview</h1>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-white transition-colors">notifications</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-white transition-colors">search</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-white transition-colors">account_circle</span>
+</div>
+</header>
+<!-- Page Content Container -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+<!-- Job Header Section -->
+<section class="mb-8">
+<div class="flex items-end justify-between mb-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="text-outline-variant font-mono text-sm tracking-widest">JOB_INSTANCE //</span>
+<span class="font-mono text-2xl font-bold tracking-tighter text-on-surface">TX-7742-ALPHA-V9</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded shadow-sm">
+<div class="w-2 h-2 rounded-full bg-primary pulse-dot"></div>
+<span class="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">Status: Running</span>
+</div>
+<span class="text-outline text-xs font-mono tracking-tighter uppercase">Deployed 12m 44s ago</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container hover:bg-surface-container-high text-xs font-bold uppercase tracking-widest transition-all cursor-pointer">Re-Run</button>
+<button class="px-4 py-2 bg-error/10 hover:bg-error/20 text-error text-xs font-bold uppercase tracking-widest transition-all cursor-pointer">Terminate</button>
+</div>
+</div>
+<!-- 1px Gradient Line Anchor -->
+<div class="h-[1px] w-full bg-gradient-to-r from-primary/50 via-secondary/50 to-transparent"></div>
+</section>
+<!-- Progress Timeline -->
+<section class="mb-12">
+<div class="flex items-center justify-between px-4">
+<!-- Step 1 -->
+<div class="relative flex flex-col items-center group">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="mt-2 text-[10px] font-bold uppercase tracking-widest text-primary">Queued</span>
+</div>
+<div class="flex-1 h-[2px] bg-primary mx-4"></div>
+<!-- Step 2 -->
+<div class="relative flex flex-col items-center group">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="mt-2 text-[10px] font-bold uppercase tracking-widest text-primary">Provisioning</span>
+</div>
+<div class="flex-1 h-[2px] bg-primary mx-4"></div>
+<!-- Step 3 (Active) -->
+<div class="relative flex flex-col items-center group">
+<div class="w-8 h-8 rounded-full bg-surface-container border-2 border-primary text-primary flex items-center justify-center z-10 pulse-dot">
+<div class="w-2 h-2 bg-primary rounded-full"></div>
+</div>
+<span class="mt-2 text-[10px] font-bold uppercase tracking-widest text-primary">Running</span>
+</div>
+<div class="flex-1 h-[2px] bg-surface-container-highest mx-4"></div>
+<!-- Step 4 -->
+<div class="relative flex flex-col items-center group opacity-40">
+<div class="w-8 h-8 rounded-full bg-surface-container border border-outline flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm">flag</span>
+</div>
+<span class="mt-2 text-[10px] font-bold uppercase tracking-widest text-on-surface">Completed</span>
+</div>
+</div>
+</section>
+<!-- Two-Column Layout -->
+<div class="grid grid-cols-10 gap-8">
+<!-- Left Column: Execution Log (60%) -->
+<div class="col-span-10 lg:col-span-6 space-y-6">
+<div class="bg-surface-container-low noise-layer rounded-lg overflow-hidden flex flex-col h-[600px] border border-outline-variant/10">
+<div class="flex items-center justify-between px-6 py-4 bg-surface-container border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm">terminal</span>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface">Execution Log</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[10px] text-outline font-mono uppercase">Lines: 12,042</span>
+<span class="material-symbols-outlined text-outline text-sm cursor-pointer hover:text-primary">download</span>
+</div>
+</div>
+<div class="flex-1 p-6 font-mono text-sm leading-relaxed overflow-y-auto custom-scrollbar bg-black/40">
+<div class="space-y-1">
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:04:01</span>
+<span class="text-secondary">[SYS]</span>
+<span class="text-on-surface-variant">Allocating compute resources on cluster-01...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:04:05</span>
+<span class="text-secondary">[SYS]</span>
+<span class="text-on-surface-variant">Mounting persistent volume (vol-77x-alpha)...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:04:08</span>
+<span class="text-primary">[EXEC]</span>
+<span class="text-on-surface">Initializing python-runtime:3.11-heavy</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:04:12</span>
+<span class="text-primary">[EXEC]</span>
+<span class="text-on-surface">Fetching model weights from S3 bucket: production-v4...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:04:15</span>
+<span class="text-secondary">[OK]</span>
+<span class="text-secondary">Weights loaded. Digest: 8f2a9b...c1</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:04:18</span>
+<span class="text-primary">[INFO]</span>
+<span class="text-on-surface-variant">Starting inference loop... Epoch 1/150</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:05:22</span>
+<span class="text-primary">[DATA]</span>
+<span class="text-on-surface">Batch 400 processed. Loss: 0.0024</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:06:44</span>
+<span class="text-primary">[DATA]</span>
+<span class="text-on-surface">Batch 800 processed. Loss: 0.0021</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:08:12</span>
+<span class="text-primary">[DATA]</span>
+<span class="text-on-surface">Batch 1200 processed. Loss: 0.0019</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:10:05</span>
+<span class="text-primary">[DATA]</span>
+<span class="text-on-surface">Batch 1600 processed. Loss: 0.0017</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:11:30</span>
+<span class="text-primary">[DATA]</span>
+<span class="text-on-surface">Batch 2000 processed. Loss: 0.0015</span>
+</div>
+<div class="flex gap-4">
+<span class="text-outline-variant shrink-0">12:12:44</span>
+<span class="text-primary font-bold">&gt;&gt;</span>
+<span class="text-primary animate-pulse">| Processing stream 2044/5000...</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Metadata (40%) -->
+<div class="col-span-10 lg:col-span-4 space-y-6">
+<!-- Job Parameters -->
+<div class="bg-surface-container-low noise-layer rounded-lg border border-outline-variant/10">
+<div class="px-6 py-4 bg-surface-container border-b border-outline-variant/10">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface">Job Parameters</span>
+</div>
+<div class="p-6 space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-xs text-outline uppercase font-medium">Job Name</span>
+<span class="text-sm font-bold">Neural-Relay-Alpha</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-outline uppercase font-medium">Project</span>
+<span class="text-sm font-bold text-secondary">PROJECT_ZEPHYR</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-outline uppercase font-medium">Priority</span>
+<div class="px-2 py-0.5 bg-primary/20 rounded-sm">
+<span class="text-[10px] text-primary font-bold">HIGH_01</span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-outline uppercase font-medium">Target Runtime</span>
+<span class="text-sm font-mono">01:45:00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-outline uppercase font-medium">Environment</span>
+<span class="text-sm font-mono bg-surface-container px-2 py-0.5 rounded text-outline-variant">prod-us-east-1</span>
+</div>
+</div>
+</div>
+<!-- Worker Node -->
+<div class="bg-surface-container-low noise-layer rounded-lg border border-outline-variant/10 overflow-hidden">
+<div class="px-6 py-4 bg-surface-container border-b border-outline-variant/10 flex items-center justify-between">
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface">Worker Node</span>
+<span class="material-symbols-outlined text-sm text-secondary">memory</span>
+</div>
+<div class="p-6 space-y-6">
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs text-outline uppercase">Worker ID</span>
+<span class="text-xs font-mono bg-surface-container-highest px-2 py-1 rounded">node_vm_4429_0x</span>
+</div>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container/40 p-3 rounded">
+<p class="text-[10px] text-outline uppercase mb-1">CPU Load</p>
+<p class="font-mono text-xl font-bold text-on-surface">78.4%</p>
+</div>
+<div class="bg-surface-container/40 p-3 rounded">
+<p class="text-[10px] text-outline uppercase mb-1">MEM Used</p>
+<p class="font-mono text-xl font-bold text-on-surface">12.4GB</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-primary/5 rounded border border-primary/10">
+<div class="w-10 h-10 rounded-full border-2 border-primary/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">speed</span>
+</div>
+<div>
+<p class="text-xs font-bold">Cluster Throughput</p>
+<p class="text-[10px] text-outline uppercase tracking-tighter">842 req/sec • Latency 12ms</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Bento -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low noise-layer p-4 rounded-lg border border-outline-variant/10 hover:bg-surface-container transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">analytics</span>
+<p class="text-[10px] font-bold uppercase tracking-widest mt-2">Metrics</p>
+</div>
+<div class="bg-surface-container-low noise-layer p-4 rounded-lg border border-outline-variant/10 hover:bg-surface-container transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">history</span>
+<p class="text-[10px] font-bold uppercase tracking-widest mt-2">History</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Notification Overlay (Floating Toast) -->
+<div class="fixed bottom-8 right-8 bg-[#1a1919]/70 backdrop-blur-xl border border-primary/20 px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(114,220,255,0.05)] flex items-center gap-4 z-50">
+<div class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(38,254,220,0.5)]"></div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-on-surface uppercase tracking-widest">System Pulse</span>
+<span class="text-[10px] text-outline-variant font-mono">ALL SYSTEMS NOMINAL // 12:12:44</span>
+</div>
+</div>
+</body></html>

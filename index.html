@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stitch | Developer Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#f3f0ef",
+              "on-error": "#490006",
+              "outline-variant": "#494847",
+              "outline": "#777575",
+              "secondary": "#26fedc",
+              "background": "#0e0e0e",
+              "secondary-dim": "#00efce",
+              "surface-container-low": "#131313",
+              "tertiary": "#fcf9f8",
+              "on-tertiary-container": "#575656",
+              "inverse-primary": "#00687f",
+              "tertiary-container": "#edeaea",
+              "primary-dim": "#00c3ed",
+              "tertiary-dim": "#edeaea",
+              "on-tertiary-fixed": "#515050",
+              "secondary-fixed": "#26fedc",
+              "on-background": "#ffffff",
+              "primary-container": "#00d2ff",
+              "on-secondary-container": "#ddfff5",
+              "secondary-container": "#006b5b",
+              "on-tertiary-fixed-variant": "#6e6d6d",
+              "inverse-surface": "#fcf8f8",
+              "surface-bright": "#2c2c2c",
+              "on-error-container": "#ffa8a3",
+              "on-surface": "#ffffff",
+              "primary-fixed-dim": "#00c3ed",
+              "on-tertiary": "#605f5e",
+              "inverse-on-surface": "#565554",
+              "surface-container": "#1a1919",
+              "on-secondary": "#005d4f",
+              "primary": "#72dcff",
+              "surface-variant": "#262626",
+              "surface-tint": "#72dcff",
+              "secondary-fixed-dim": "#00efce",
+              "surface-container-lowest": "#000000",
+              "surface": "#0e0e0e",
+              "on-secondary-fixed": "#00483d",
+              "primary-fixed": "#00d2ff",
+              "tertiary-fixed": "#ffffff",
+              "on-primary-fixed-variant": "#004c5e",
+              "on-secondary-fixed-variant": "#006859",
+              "on-primary-container": "#004253",
+              "error-container": "#9f0519",
+              "on-primary": "#004c5e",
+              "surface-container-highest": "#262626",
+              "surface-dim": "#0e0e0e",
+              "on-surface-variant": "#adaaaa",
+              "error-dim": "#d7383b",
+              "on-primary-fixed": "#002c38",
+              "surface-container-high": "#201f1f",
+              "error": "#ff716c"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .noise-layer {
+        position: relative;
+      }
+      .noise-layer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+      .glow-primary {
+        box-shadow: 0 0 20px rgba(114, 220, 255, 0.05);
+      }
+      .custom-bezier {
+        transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="h-16 w-full sticky top-0 z-[100] bg-[#0e0e0e]/70 backdrop-blur-xl after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-gradient-to-r after:from-[#72dcff] after:to-[#26fedc]">
+<div class="flex items-center justify-between px-8 w-full max-w-[1440px] mx-auto h-full">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-black bg-gradient-to-r from-[#72dcff] to-[#26fedc] bg-clip-text text-transparent cursor-pointer uppercase tracking-tighter">Stitch</span>
+<div class="hidden md:flex items-center gap-8 font-['Inter'] text-sm uppercase tracking-widest">
+<a class="text-[#a3a3a3] hover:text-white transition-opacity" href="#">Platform</a>
+<a class="text-[#a3a3a3] hover:text-white transition-opacity" href="#">Solutions</a>
+<a class="text-[#a3a3a3] hover:text-white transition-opacity" href="#">Pricing</a>
+<a class="text-[#a3a3a3] hover:text-white transition-opacity" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-6 font-['Inter'] text-sm uppercase tracking-widest">
+<button class="text-[#a3a3a3] hover:text-white transition-opacity font-medium">Log In</button>
+<button class="bg-gradient-to-r from-primary to-secondary text-on-primary px-6 py-2 rounded-sm font-bold hover:opacity-80 transition-opacity">Sign Up</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-[calc(100vh-64px)] flex items-center px-8 max-w-[1440px] mx-auto py-20 overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-10 gap-16 items-center w-full">
+<!-- Content Left (60%) -->
+<div class="md:col-span-6 space-y-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/20">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary">System V2.0 Live</span>
+</div>
+<h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] text-on-surface">
+                    Compute <span class="text-primary italic">Anywhere</span>,<br/>Scale <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Everywhere</span>.
+                </h1>
+<p class="text-on-surface-variant text-xl max-w-xl leading-relaxed">
+                    A unified developer terminal for global job orchestration. Deploy mission-critical workloads across a decentralized mesh of high-performance workers.
+                </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="group relative bg-primary text-on-primary px-10 py-4 font-bold uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-all custom-bezier noise-layer overflow-hidden">
+                        Get Started
+                    </button>
+<button class="border border-outline-variant/30 text-on-surface px-10 py-4 font-bold uppercase tracking-widest text-sm hover:bg-surface-container transition-colors custom-bezier">
+                        View Docs
+                    </button>
+</div>
+</div>
+<!-- Terminal Card Right (40%) -->
+<div class="md:col-span-4 relative group">
+<div class="absolute -inset-4 bg-gradient-to-br from-primary/20 to-secondary/10 blur-3xl opacity-50"></div>
+<div class="relative bg-surface-container-low border border-outline-variant/20 rounded-lg overflow-hidden shadow-2xl noise-layer">
+<div class="h-10 bg-surface-container px-4 flex items-center justify-between border-b border-outline-variant/10">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-error/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary/40"></div>
+</div>
+<div class="text-[10px] font-mono text-outline uppercase tracking-widest">stitch_terminal_v1.0.4</div>
+<div class="w-10"></div>
+</div>
+<div class="p-6 font-mono text-sm space-y-3 min-h-[320px]">
+<div class="flex gap-2">
+<span class="text-secondary">$</span>
+<span class="text-on-surface">stitch job submit --file prod-cluster.yml</span>
+</div>
+<div class="text-outline-variant italic tracking-tight">&gt;&gt; Initializing global handshake...</div>
+<div class="flex gap-4">
+<span class="text-primary">[OK]</span>
+<span class="text-on-surface-variant">Validated 124 active nodes.</span>
+</div>
+<div class="text-on-surface-variant">&gt;&gt; Distributing shards [8/8]</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary h-full w-[85%]"></div>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-4">
+<div class="p-2 bg-surface-container-highest/50 rounded flex items-center justify-between">
+<span class="text-[10px] text-outline uppercase">CPU-LOAD</span>
+<span class="text-secondary">4.2%</span>
+</div>
+<div class="p-2 bg-surface-container-highest/50 rounded flex items-center justify-between">
+<span class="text-[10px] text-outline uppercase">LATENCY</span>
+<span class="text-primary">12ms</span>
+</div>
+</div>
+<div class="flex gap-2 pt-2 items-center">
+<span class="material-symbols-outlined text-secondary text-xs" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-secondary uppercase text-[11px] font-bold">Execution Successful</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Bar -->
+<section class="bg-surface-container-low py-12 border-y border-outline-variant/10">
+<div class="max-w-[1440px] mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="text-center md:text-left space-y-1">
+<div class="text-4xl font-mono font-black text-on-surface">4.8M+</div>
+<div class="text-xs uppercase tracking-[0.3em] text-outline font-bold">Jobs Processed</div>
+</div>
+<div class="text-center md:text-left space-y-1 border-x border-outline-variant/10 px-12">
+<div class="text-4xl font-mono font-black text-secondary">24.5K</div>
+<div class="text-xs uppercase tracking-[0.3em] text-outline font-bold">Active Workers</div>
+</div>
+<div class="text-center md:text-left space-y-1">
+<div class="text-4xl font-mono font-black text-primary">99.99%</div>
+<div class="text-xs uppercase tracking-[0.3em] text-outline font-bold">Global Uptime</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="py-32 px-8 max-w-[1440px] mx-auto">
+<div class="mb-20">
+<h2 class="text-4xl font-black uppercase tracking-tighter mb-4">How It Works</h2>
+<div class="h-1 w-24 bg-gradient-to-r from-primary to-secondary"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<!-- Step 1 -->
+<div class="relative group">
+<div class="text-[120px] font-black absolute -top-20 -left-4 text-surface-container-highest/20 select-none">01</div>
+<div class="space-y-6 relative z-10">
+<div class="w-16 h-16 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20 shadow-xl group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary">upload_file</span>
+</div>
+<h3 class="text-xl font-bold uppercase tracking-tight">Submit Job</h3>
+<p class="text-on-surface-variant leading-relaxed">Define your compute requirements in simple YAML. Use our CLI or API to push workloads to the global mesh in milliseconds.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative group">
+<div class="text-[120px] font-black absolute -top-20 -left-4 text-surface-container-highest/20 select-none">02</div>
+<div class="space-y-6 relative z-10">
+<div class="w-16 h-16 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20 shadow-xl group-hover:border-secondary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-secondary">settings_suggest</span>
+</div>
+<h3 class="text-xl font-bold uppercase tracking-tight">Process</h3>
+<p class="text-on-surface-variant leading-relaxed">Our intelligent orchestrator selects the optimal workers based on latency, cost, and hardware specs. Real-time logging included.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="relative group">
+<div class="text-[120px] font-black absolute -top-20 -left-4 text-surface-container-highest/20 select-none">03</div>
+<div class="space-y-6 relative z-10">
+<div class="w-16 h-16 rounded bg-surface-container flex items-center justify-center border border-outline-variant/20 shadow-xl group-hover:border-primary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary">analytics</span>
+</div>
+<h3 class="text-xl font-bold uppercase tracking-tight">Result</h3>
+<p class="text-on-surface-variant leading-relaxed">Collect your output from a centralized bucket or stream it back to your local terminal. Unified data from fragmented nodes.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Benefits -->
+<section class="py-32 bg-surface-container-lowest noise-layer">
+<div class="max-w-[1440px] mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Card 1 -->
+<div class="p-10 bg-surface-container border border-outline-variant/10 rounded-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">security</span>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="h-1 w-12 bg-primary"></div>
+<h3 class="text-3xl font-black uppercase tracking-tighter">Hardened Isolation</h3>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-md">Every job runs in a cryptographically secured gVisor container. Your code is invisible to the worker, and the worker is invisible to your code.</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-10 bg-surface-container border border-outline-variant/10 rounded-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-secondary">bolt</span>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="h-1 w-12 bg-secondary"></div>
+<h3 class="text-3xl font-black uppercase tracking-tighter">Zero Latency</h3>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-md">Our global Anycast network ensures your CLI commands reach the mesh at light speed. No cold starts, no overhead, just pure execution.</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-10 bg-surface-container border border-outline-variant/10 rounded-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">account_tree</span>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="h-1 w-12 bg-primary"></div>
+<h3 class="text-3xl font-black uppercase tracking-tighter">Elastic Mesh</h3>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-md">Scale from 1 to 10,000 workers instantly. Stitch handles the heavy lifting of load balancing and fault tolerance automatically.</p>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="p-10 bg-surface-container border border-outline-variant/10 rounded-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-secondary">monitoring</span>
+</div>
+<div class="relative z-10 space-y-4">
+<div class="h-1 w-12 bg-secondary"></div>
+<h3 class="text-3xl font-black uppercase tracking-tighter">Deep Visibility</h3>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-md">Real-time metrics, distributed tracing, and centralized log aggregation are built directly into the Stitch runtime environment.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-32 relative overflow-hidden px-8">
+<div class="absolute inset-0 bg-gradient-to-b from-background to-surface-container-low"></div>
+<div class="max-w-[1440px] mx-auto relative z-10 text-center space-y-12">
+<h2 class="text-5xl md:text-7xl font-black tracking-tighter uppercase max-w-4xl mx-auto leading-tight"> Ready to build the <span class="text-primary italic">future</span> of compute?</h2>
+<div class="flex flex-col md:flex-row gap-6 justify-center">
+<button class="bg-gradient-to-r from-primary to-secondary text-on-primary px-12 py-5 font-bold uppercase tracking-widest text-lg hover:scale-105 transition-transform noise-layer">Create Free Account</button>
+<button class="bg-surface-container border border-outline-variant/30 text-on-surface px-12 py-5 font-bold uppercase tracking-widest text-lg hover:bg-surface-container-high transition-colors">Contact Sales</button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/10 py-20 px-8">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="space-y-6">
+<span class="text-2xl font-black bg-gradient-to-r from-[#72dcff] to-[#26fedc] bg-clip-text text-transparent uppercase tracking-tighter">Stitch</span>
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-xs">The unified execution layer for modern development teams. Purpose-built for the decentralized era.</p>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest mb-6">Product</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Platform</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Infrastructure</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Changelog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest mb-6">Resources</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm">
+<li><a class="hover:text-secondary transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-secondary transition-colors" href="#">API Reference</a></li>
+<li><a class="hover:text-secondary transition-colors" href="#">Community</a></li>
+<li><a class="hover:text-secondary transition-colors" href="#">Support</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest mb-6">Legal</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm">
+<li><a class="hover:text-white transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto mt-20 pt-8 border-t border-outline-variant/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-outline font-mono uppercase tracking-widest">© 2024 STITCH TECHNOLOGIES INC. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-outline hover:text-primary cursor-pointer transition-colors">brand_awareness</span>
+<span class="material-symbols-outlined text-outline hover:text-primary cursor-pointer transition-colors">terminal</span>
+<span class="material-symbols-outlined text-outline hover:text-primary cursor-pointer transition-colors">code</span>
+</div>
+</div>
+</footer>
+</body></html>
