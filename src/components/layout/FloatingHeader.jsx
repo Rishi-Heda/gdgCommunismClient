@@ -102,7 +102,6 @@ const FloatingHeader = () => {
 
             <Link to="/marketplace" className="header-nav-link relative p-2.5 rounded-full hover:bg-background-base hover:text-accent-primary transition-all duration-300 group">
               <Store className="w-4 h-4" />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent-primary rounded-full ring-2 ring-[#000] scale-0 group-hover:scale-100 transition-transform" />
             </Link>
             
             <Link to="/settings" className="header-nav-link w-10 h-10 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary transition-all ml-1 overflow-hidden">
