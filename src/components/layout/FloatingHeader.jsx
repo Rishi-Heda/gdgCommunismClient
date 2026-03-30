@@ -38,26 +38,20 @@ const FloatingHeader = () => {
 
   return (
     <>
-      <header 
-        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 w-[95%] max-w-5xl
-          ${isScrolled ? 'top-4' : 'top-6'}
-        `}
-      >
-        <div className={`
-          relative flex items-center justify-between px-6 py-2.5 
-          bg-surface-card/80 backdrop-blur-xl border border-white/5 shadow-2xl rounded-full
-          transition-all duration-500
-          ${isScrolled ? 'py-2 px-5 bg-surface-card/90 border-[#FAFF00]/10 shadow-[#FAFF00]/5' : ''}
-        `}>
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="relative">
-              <Hexagon className="w-7 h-7 text-accent-primary group-hover:rotate-90 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-accent-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <span className="text-lg font-mono font-black tracking-tighter hidden sm:inline text-text-primary">HIVE<span className="text-accent-primary">MIND</span></span>
-          </Link>
+      <header className={`fixed top-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 w-fit animate-fade-in transition-all duration-500 ${isScrolled ? 'top-4 scale-95' : 'top-8'}`}>
+        
+        {/* Isolated Logo Pill */}
+        <Link to="/" className="w-14 h-14 bg-[#000] rounded-full border border-white/5 flex items-center justify-center group shadow-2xl hover:border-accent-primary/30 transition-all duration-500 overflow-hidden relative">
+          <div className="absolute inset-0 bg-accent-glow opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Hexagon className="w-6 h-6 text-accent-primary group-hover:rotate-90 transition-transform duration-700 relative z-10" />
+        </Link>
 
+        {/* Main Navigation Capsule */}
+        <div className={`
+          flex items-center gap-1.5 px-2 py-2 
+          bg-[#000] border border-white/5 shadow-2xl rounded-full
+          transition-all duration-500
+        `}>
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
@@ -65,51 +59,45 @@ const FloatingHeader = () => {
                 key={item.name}
                 to={item.path}
                 className={({ isActive }) => `
-                  relative flex items-center gap-2 px-4 py-2 text-[11px] font-mono uppercase tracking-[0.15em] transition-all
+                  group relative flex items-center gap-0 hover:gap-2 px-3.5 py-2.5 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.15em] transition-all duration-500 ease-in-out overflow-hidden
                   ${isActive 
-                    ? 'text-accent-primary' 
-                    : 'text-text-secondary hover:text-text-primary'
+                    ? 'bg-accent-primary text-black px-5 gap-2' 
+                    : 'text-text-secondary hover:bg-background-base hover:text-accent-primary hover:px-5'
                   }
                 `}
               >
-                {({ isActive }) => (
-                  <>
-                    <item.icon className={`w-3.5 h-3.5 ${isActive ? 'animate-pulse' : ''}`} />
-                    <span>{item.name}</span>
-                    {isActive && (
-                      <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-primary rounded-full shadow-[0_0_10px_#FAFF00]" />
-                    )}
-                  </>
-                )}
+                <item.icon className="w-3.5 h-3.5 shrink-0" />
+                <span className={`
+                  max-w-0 overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out
+                  group-hover:max-w-[120px]
+                  ${location.pathname === item.path ? 'max-w-[120px]' : ''}
+                `}>
+                  {item.name}
+                </span>
               </NavLink>
             ))}
           </nav>
 
+          {/* Vertical Divider */}
+          <div className="hidden md:block w-[1px] h-6 bg-white/10 mx-1" />
+
           {/* Right Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <button className="p-2 text-text-muted hover:text-accent-primary transition-colors hidden sm:block">
+          <div className="flex items-center gap-1">
+            <button className="p-2.5 rounded-full text-text-muted hover:bg-background-base hover:text-accent-primary transition-all duration-300">
               <Search className="w-4 h-4" />
             </button>
-            <button className="relative p-2 text-text-muted hover:text-accent-primary transition-colors">
+            <button className="relative p-2.5 rounded-full text-text-muted hover:bg-background-base hover:text-accent-primary transition-all duration-300">
               <Bell className="w-4 h-4" />
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-accent-primary rounded-full ring-2 ring-surface-card" />
+              <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-accent-primary rounded-full ring-2 ring-[#000]" />
             </button>
             
-            <div className="h-4 w-[1px] bg-white/10 mx-1 hidden sm:block" />
-            
-            <Link to="/settings" className="flex items-center gap-3 pl-1 sm:pl-2">
-              <div className="text-right hidden lg:block">
-                <div className="text-[10px] font-bold text-text-primary leading-none mb-0.5">ADMIN_01</div>
-                <div className="text-[9px] font-mono text-accent-primary">2,850.5 HC</div>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary/50 transition-colors">
-                <User className="w-4 h-4 text-text-muted" />
-              </div>
+            <Link to="/settings" className="w-10 h-10 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary transition-all ml-1 overflow-hidden">
+              <User className="w-4 h-4 text-text-muted" />
             </Link>
 
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden p-2 text-text-primary"
+              className="md:hidden p-2.5 rounded-full text-text-primary hover:bg-background-base transition-all"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
