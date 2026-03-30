@@ -7,6 +7,7 @@ import SubmitJob from './pages/SubmitJob';
 import JobsList from './pages/JobsList';
 import JobDetails from './pages/JobDetails';
 import Contributors from './pages/Contributors';
+import Credits from './pages/Credits';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           <Route path="/jobs" element={<JobsList />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/contributors" element={<Contributors />} />
-          <Route path="/credits" element={<div className="p-8 text-center text-text-muted">Credits page coming soon.</div>} />
+          <Route path="/credits" element={<Credits />} />
           <Route path="/settings" element={<div className="p-8 text-center text-text-muted">Settings page coming soon.</div>} />
         </Route>
 

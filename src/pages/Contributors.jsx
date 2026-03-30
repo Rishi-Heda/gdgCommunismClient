@@ -11,6 +11,7 @@ import {
   Star
 } from 'lucide-react';
 import { mockNodes } from '../data/mock';
+import ScrambleText from '../components/common/ScrambleText';
 
 const Contributors = () => {
   const getStatusColor = (status) => {
@@ -33,7 +34,7 @@ const Contributors = () => {
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <Users className="w-8 h-8 text-accent-primary" />
-            Contributor Network
+            <ScrambleText text="Contributor Network" />
           </h1>
           <p className="text-text-secondary mt-1">1,248 active nodes across 14 global regions. Providing distributed compute for research.</p>
         </div>
@@ -53,9 +54,13 @@ const Contributors = () => {
               <div className={`p-2 rounded-lg bg-surface-elevated border border-[#222] group-hover:border-accent-primary transition-all ${stat.color}`}>
                 <stat.icon className="w-5 h-5" />
               </div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#555]">{stat.label}</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#555]">
+                <ScrambleText text={stat.label} />
+              </span>
             </div>
-            <div className={`text-4xl font-mono font-bold ${stat.color}`}>{stat.value}</div>
+            <div className={`text-4xl font-mono font-bold ${stat.color}`}>
+              <ScrambleText text={stat.value} />
+            </div>
           </div>
         ))}
       </div>
@@ -94,7 +99,9 @@ const Contributors = () => {
           <div key={`${node.id}-${idx}`} className="bg-surface-card border border-[#222] rounded-3xl p-6 card-hover relative group">
             <header className="flex justify-between items-start mb-6">
               <div>
-                <div className="text-sm font-mono font-bold text-accent-primary">{node.id}</div>
+                <div className="text-sm font-mono font-bold text-accent-primary">
+                  <ScrambleText text={node.id} />
+                </div>
                 <div className="flex items-center gap-1.5 mt-1 text-text-muted">
                   <span className="text-sm">{node.location}</span>
                 </div>

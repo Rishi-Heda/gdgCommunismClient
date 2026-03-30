@@ -17,6 +17,7 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { mockJobs } from '../data/mock';
+import ScrambleText from '../components/common/ScrambleText';
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -54,16 +55,18 @@ const JobDetails = () => {
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Jobs
           </Link>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">{job.name}</h1>
+            <h1 className="text-3xl font-bold">
+              <ScrambleText text={job.name} />
+            </h1>
             <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono border ${getStatusColor(job.status)}`}>
               {job.status}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-mono text-[#555] uppercase tracking-widest">
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> ID: {job.id}</span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Submitter: @{job.submitter}</span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Started: {job.started}</span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Assigned Node: <span className="text-accent-primary underline decoration-accent-primary/30 cursor-pointer">{job.node}</span></span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> ID: <ScrambleText text={job.id} /></span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Submitter: @<ScrambleText text={job.submitter} /></span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Started: <ScrambleText text={job.started} /></span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Assigned Node: <span className="text-accent-primary underline decoration-accent-primary/30 cursor-pointer"><ScrambleText text={job.node} /></span></span>
           </div>
         </div>
         
@@ -98,7 +101,9 @@ const JobDetails = () => {
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-[#222]">
                   <span className="text-xs text-text-muted">Credits Consumed</span>
-                  <span className="text-sm font-mono text-accent-primary">412.50 HC</span>
+                  <span className="text-sm font-mono text-accent-primary">
+                    <ScrambleText text="412.50" /> HC
+                  </span>
                 </div>
                 <p className="text-xs text-text-secondary leading-relaxed mt-4">
                   {job.description}
@@ -121,15 +126,21 @@ const JobDetails = () => {
               <div className="space-y-6">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="text-center p-3 bg-surface-elevated rounded-xl border border-[#222] group hover:border-accent-primary transition-all">
-                    <div className="text-2xl font-mono font-bold text-text-primary group-hover:text-accent-primary transition-colors">{job.cpu}%</div>
+                    <div className="text-2xl font-mono font-bold text-text-primary group-hover:text-accent-primary transition-colors">
+                      <ScrambleText text={job.cpu.toString()} />%
+                    </div>
                     <div className="text-[8px] font-mono text-[#555] uppercase tracking-widest mt-1">CPU Load</div>
                   </div>
                   <div className="text-center p-3 bg-surface-elevated rounded-xl border border-[#222] group hover:border-[#39FF6A] transition-all">
-                    <div className="text-2xl font-mono font-bold text-text-primary group-hover:text-status-green transition-colors">{job.gpu}%</div>
+                    <div className="text-2xl font-mono font-bold text-text-primary group-hover:text-status-green transition-colors">
+                      <ScrambleText text={job.gpu.toString()} />%
+                    </div>
                     <div className="text-[8px] font-mono text-[#555] uppercase tracking-widest mt-1">GPU Compute</div>
                   </div>
                   <div className="text-center p-3 bg-surface-elevated rounded-xl border border-[#222] group hover:border-status-yellow transition-all">
-                    <div className="text-2xl font-mono font-bold text-text-primary group-hover:text-status-yellow transition-colors">{job.ram}%</div>
+                    <div className="text-2xl font-mono font-bold text-text-primary group-hover:text-status-yellow transition-colors">
+                      <ScrambleText text={job.ram.toString()} />%
+                    </div>
                     <div className="text-[8px] font-mono text-[#555] uppercase tracking-widest mt-1">Memory</div>
                   </div>
                 </div>
@@ -223,7 +234,9 @@ const JobDetails = () => {
              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#555] mb-6">Assigned Node Spec</div>
              <div className="bg-background-base border border-[#222] rounded-xl p-4 group hover:border-accent-primary transition-all">
                <div className="flex justify-between items-center mb-4">
-                 <span className="font-mono text-accent-primary text-xs tracking-widest">node-77a2</span>
+                 <span className="font-mono text-accent-primary text-xs tracking-widest">
+                   <ScrambleText text="node-77a2" />
+                 </span>
                  <div className="w-2 h-2 rounded-full bg-status-green" />
                </div>
                <div className="space-y-3">
@@ -255,11 +268,15 @@ const JobDetails = () => {
             </div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-medium">Session Total</span>
-              <span className="text-xl font-mono font-bold">412.50 HC</span>
+              <span className="text-xl font-mono font-bold">
+                <ScrambleText text="412.50" /> HC
+              </span>
             </div>
             <div className="pt-4 border-t border-black/10 flex justify-between items-center">
               <span className="text-[10px] font-mono font-bold uppercase opacity-60">Balance Remaining</span>
-              <span className="text-xs font-mono font-bold">2,438.00 HC</span>
+              <span className="text-xs font-mono font-bold">
+                <ScrambleText text="2,438.00" /> HC
+              </span>
             </div>
           </div>
         </div>

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { mockJobs } from '../data/mock';
+import ScrambleText from '../components/common/ScrambleText';
 
 const JobsList = () => {
   const [filterStatus, setFilterStatus] = useState('All');
@@ -32,7 +33,7 @@ const JobsList = () => {
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <PlayCircle className="w-8 h-8 text-accent-primary" />
-            All Compute Jobs
+            <ScrambleText text="All Compute Jobs" />
           </h1>
           <p className="text-text-secondary mt-1">Manage and monitor all workloads across the HiveMind network.</p>
         </div>
@@ -89,24 +90,44 @@ const JobsList = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#111]">
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Job ID</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Name & Type</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Submitter</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Status</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Node</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Started</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">Duration</th>
-                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase text-right">Actions</th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Job ID" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Name & Type" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Submitter" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Status" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Node" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Started" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase">
+                  <ScrambleText text="Duration" />
+                </th>
+                <th className="px-6 py-5 text-[10px] font-mono tracking-widest text-[#555] uppercase text-right">
+                  <ScrambleText text="Actions" />
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#222]">
               {[...mockJobs, ...mockJobs].map((job, idx) => (
                 <tr key={`${job.id}-${idx}`} className="hover:bg-[#111] transition-colors group">
                   <td className="px-6 py-4">
-                    <span className="text-[10px] font-mono text-accent-primary uppercase tracking-tighter">#{job.id.split('-')[1]}</span>
+                    <span className="text-[10px] font-mono text-accent-primary uppercase tracking-tighter">
+                      #<ScrambleText text={job.id.split('-')[1]} />
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm font-semibold group-hover:text-accent-primary transition-colors">{job.name}</div>
+                    <div className="text-sm font-semibold group-hover:text-accent-primary transition-colors">
+                      <ScrambleText text={job.name} />
+                    </div>
                     <div className="text-[10px] font-mono text-text-muted uppercase mt-0.5 tracking-tighter">{job.type}</div>
                   </td>
                   <td className="px-6 py-4">
@@ -114,7 +135,7 @@ const JobsList = () => {
                       <div className="w-5 h-5 rounded-full bg-surface-elevated border border-[#222] flex items-center justify-center">
                         <span className="text-[8px] text-text-muted uppercase">{job.submitter[0]}</span>
                       </div>
-                      <span className="text-xs font-mono text-text-secondary">@{job.submitter}</span>
+                      <span className="text-xs font-mono text-text-secondary">@<ScrambleText text={job.submitter} /></span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -123,7 +144,9 @@ const JobsList = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs font-mono text-text-muted">{job.node}</span>
+                    <span className="text-xs font-mono text-text-muted">
+                      <ScrambleText text={job.node} />
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-xs font-mono text-text-secondary whitespace-nowrap">
                     {job.started}

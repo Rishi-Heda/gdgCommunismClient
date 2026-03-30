@@ -11,6 +11,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { mockCredits } from '../data/mock';
+import ScrambleText from '../components/common/ScrambleText';
 
 const SubmitJob = () => {
   const [jobType, setJobType] = useState('AI Training');
@@ -22,7 +23,7 @@ const SubmitJob = () => {
       <header className="mb-10">
         <h1 className="text-3xl font-bold flex items-center gap-3">
           <PlusSquare className="w-8 h-8 text-accent-primary" />
-          Submit Compute Job
+          <ScrambleText text="Submit Compute Job" />
         </h1>
         <p className="text-text-secondary mt-2">Configure your requirements and upload your workload to the HiveMind network.</p>
       </header>
@@ -33,7 +34,7 @@ const SubmitJob = () => {
         <div className="bg-surface-card border border-[#222] rounded-2xl p-8 space-y-6">
           <div className="flex items-center gap-2 mb-6 text-[10px] font-mono uppercase tracking-[0.2em] text-[#555]">
             <span className="w-5 h-5 rounded-full border border-[#333] flex items-center justify-center text-text-muted">1</span>
-            Job Details
+            <ScrambleText text="Job Details" />
           </div>
           
           <div className="space-y-4">
@@ -81,7 +82,7 @@ const SubmitJob = () => {
         <div className="bg-surface-card border border-[#222] rounded-2xl p-8 space-y-6">
           <div className="flex items-center gap-2 mb-6 text-[10px] font-mono uppercase tracking-[0.2em] text-[#555]">
             <span className="w-5 h-5 rounded-full border border-[#333] flex items-center justify-center text-text-muted">2</span>
-            Resource Requirements
+            <ScrambleText text="Resource Requirements" />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -152,7 +153,7 @@ const SubmitJob = () => {
         <div className="bg-surface-card border border-[#222] rounded-2xl p-8 space-y-6">
           <div className="flex items-center gap-2 mb-6 text-[10px] font-mono uppercase tracking-[0.2em] text-[#555]">
             <span className="w-5 h-5 rounded-full border border-[#333] flex items-center justify-center text-text-muted">3</span>
-            Upload
+            <ScrambleText text="Upload" />
           </div>
           
           <div className="border-2 border-dashed border-[#222] hover:border-accent-primary transition-colors rounded-3xl p-12 text-center group bg-surface-elevated/50 cursor-pointer">
@@ -185,7 +186,7 @@ const SubmitJob = () => {
         <div className="bg-surface-card border border-[#222] rounded-2xl p-8 space-y-6">
           <div className="flex items-center gap-2 mb-6 text-[10px] font-mono uppercase tracking-[0.2em] text-[#555]">
             <span className="w-5 h-5 rounded-full border border-[#333] flex items-center justify-center text-text-muted">4</span>
-            Priority & Credits
+            <ScrambleText text="Priority & Credits" />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -205,9 +206,11 @@ const SubmitJob = () => {
                 }`}
               >
                 {priority === p.name && <div className="absolute top-0 right-0 w-8 h-8 bg-accent-primary/20 flex items-center justify-center rounded-bl-xl"><PlusSquare className="w-3 h-3 text-accent-primary" /></div>}
-                <div className="text-xs font-mono text-text-muted mb-1 uppercase tracking-tighter">{p.name}</div>
+                <div className="text-xs font-mono text-text-muted mb-1 uppercase tracking-tighter">
+                  <ScrambleText text={p.name} />
+                </div>
                 <div className="text-xl font-bold font-mono text-text-primary mb-2">
-                  {p.cost} <span className="text-[10px] text-text-muted uppercase tracking-tighter">Credits/hr</span>
+                  <ScrambleText text={p.cost} /> <span className="text-[10px] text-text-muted uppercase tracking-tighter">Credits/hr</span>
                 </div>
                 <p className="text-[10px] text-text-muted leading-relaxed uppercase font-mono tracking-tighter truncate">{p.desc}</p>
               </button>
@@ -217,7 +220,9 @@ const SubmitJob = () => {
           <div className="pt-6 border-t border-[#222] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="text-[10px] font-mono text-[#555] uppercase tracking-widest">Account Balance:</div>
-              <div className="text-xl font-mono font-bold text-accent-primary">{mockCredits.balance} HC</div>
+              <div className="text-xl font-mono font-bold text-accent-primary">
+                <ScrambleText text={mockCredits.balance.toString()} /> HC
+              </div>
             </div>
             
             <button className="w-full sm:w-auto bg-accent-primary text-black px-10 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(250,255,0,0.1)]">

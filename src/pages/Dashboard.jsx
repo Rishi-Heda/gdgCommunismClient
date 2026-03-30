@@ -9,6 +9,7 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ScrambleText from '../components/common/ScrambleText';
 
 const Dashboard = () => {
   const stats = [
@@ -41,8 +42,12 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-xl bg-surface-elevated border border-[#222] flex items-center justify-center mb-4 group-hover:border-accent-primary transition-colors">
               <stat.icon className="w-5 h-5 text-text-muted group-hover:text-accent-primary transition-colors" />
             </div>
-            <div className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-1">{stat.label}</div>
-            <div className="text-3xl font-mono font-bold text-accent-primary leading-none">{stat.value}</div>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-1">
+              <ScrambleText text={stat.label} />
+            </div>
+            <div className="text-3xl font-mono font-bold text-accent-primary leading-none">
+              <ScrambleText text={stat.value} />
+            </div>
           </div>
         ))}
       </div>
@@ -76,8 +81,12 @@ const Dashboard = () => {
                   {mockJobs.map((job) => (
                     <tr key={job.id} className="hover:bg-[#111] transition-colors group cursor-pointer">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors">{job.name}</div>
-                        <div className="text-[10px] font-mono text-text-muted mt-0.5 uppercase tracking-tighter">ID: {job.id}</div>
+                        <div className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors">
+                          <ScrambleText text={job.name} />
+                        </div>
+                        <div className="text-[10px] font-mono text-text-muted mt-0.5 uppercase tracking-tighter">
+                          ID: <ScrambleText text={job.id} />
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-xs font-mono text-text-secondary">@{job.submitter}</td>
                       <td className="px-6 py-4">
@@ -116,7 +125,9 @@ const Dashboard = () => {
               {mockNodes.slice(0, 4).map((node) => (
                 <div key={node.id} className="bg-surface-card border border-[#222] p-5 rounded-2xl hover:border-accent-primary transition-all duration-300">
                   <div className="flex justify-between items-start mb-4">
-                    <div className="text-xs font-mono text-accent-primary">{node.id}</div>
+                    <div className="text-xs font-mono text-accent-primary">
+                      <ScrambleText text={node.id} />
+                    </div>
                     <div className={`w-2 h-2 rounded-full ${node.status === 'ONLINE' ? 'bg-status-green' : 'bg-status-red'} animate-pulse`} />
                   </div>
                   
@@ -180,7 +191,9 @@ const Dashboard = () => {
                   </div>
                   <div className="pb-6 last:pb-0">
                     <p className="text-xs text-text-primary leading-relaxed">{event.text}</p>
-                    <span className="text-[10px] font-mono text-text-muted uppercase mt-1 inline-block">{event.time}</span>
+                    <span className="text-[10px] font-mono text-text-muted uppercase mt-1 inline-block">
+                      <ScrambleText text={event.time} />
+                    </span>
                   </div>
                 </div>
               ))}
