@@ -18,6 +18,28 @@ const SubmitJob = () => {
   const [gpuRequired, setGpuRequired] = useState(true);
   const [priority, setPriority] = useState('Standard');
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = React.useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file && file.name.toLowerCase().endsWith('.zip')) {
+      setSelectedFile(file);
+    } else if (file) {
+      alert('Invalid file format. Please upload a .zip file.');
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.name.toLowerCase().endsWith('.zip')) {
+      setSelectedFile(file);
+    } else if (file) {
+      alert('Invalid file format. Please upload a .zip file.');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto pb-20">
       <header className="mb-10">
@@ -156,12 +178,33 @@ const SubmitJob = () => {
             <ScrambleText text="Upload" />
           </div>
           
-          <div className="border-2 border-dashed border-[#222] hover:border-accent-primary transition-colors rounded-3xl p-12 text-center group bg-surface-elevated/50 cursor-pointer">
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            className="border-2 border-dashed border-[#222] hover:border-accent-primary transition-colors rounded-3xl p-12 text-center group bg-surface-elevated/50 cursor-pointer relative"
+          >
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileChange} 
+              accept=".zip" 
+              className="hidden" 
+            />
             <div className="w-16 h-16 rounded-full bg-background-base border border-[#222] flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:bg-accent-glow transition-all">
               <Upload className="w-6 h-6 text-text-muted group-hover:text-accent-primary" />
             </div>
-            <p className="text-text-primary font-medium">Click or drag and drop files here</p>
-            <p className="text-text-muted text-xs mt-2 uppercase font-mono tracking-widest">Supports .py, .ipynb, .zip</p>
+            {selectedFile ? (
+              <div className="animate-fade-in">
+                <p className="text-accent-primary font-bold font-mono tracking-wider">{selectedFile.name}</p>
+                <p className="text-[10px] text-text-muted font-mono uppercase mt-1">FILE VERIFIED & READY</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-text-primary font-medium">Click or drag and drop files here</p>
+                <p className="text-text-muted text-xs mt-2 uppercase font-mono tracking-widest">Supports .zip only</p>
+              </>
+            )}
           </div>
           
           <div className="relative flex items-center py-4">
