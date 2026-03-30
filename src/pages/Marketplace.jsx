@@ -9,14 +9,19 @@ import {
   Gift,
   ExternalLink,
   Coins,
-  Plus
+  Plus,
+  Minus,
+  Check
 } from 'lucide-react';
 import ScrollingTape from '../components/marketplace/ScrollingTape';
 import { mockWealth } from '../data/mock';
+import { useCart } from '../context/CartContext';
 
 const Marketplace = () => {
   const [activeCategory, setActiveCategory] = useState('All Assets');
   const [exchangeAmount, setExchangeAmount] = useState(1000);
+  const { cartItems, addToCart, updateQuantity } = useCart();
+  
   const mcReceive = exchangeAmount / mockWealth.exchangeRate;
 
   const allItems = [
@@ -256,9 +261,54 @@ const Marketplace = () => {
 
               <div className="flex items-center justify-between pt-6 border-t border-black/5">
                 <div className="font-mono text-sm font-black italic">{item.cost}</div>
-                <button className="w-10 h-10 rounded-full bg-black text-[#FAFF00] flex items-center justify-center group-hover:scale-110 transition-all border border-[#FAFF00]/20">
-                  <Plus className="w-5 h-5" />
-                </button>
+                
+                <div className="relative h-10 flex items-center justify-end">
+                  {(() => {
+                    const quantity = cartItems.find(ci => ci.id === item.id)?.quantity || 0;
+                    return (
+                      <div className="group/qty relative flex items-center bg-black rounded-full h-10 border border-[#FAFF00]/20 transition-all duration-500 overflow-hidden w-10 hover:w-32 cursor-default shadow-lg">
+                        {/* Primary Button - Centered in circle state */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(item);
+                          }}
+                          className="absolute left-0 w-10 h-10 flex items-center justify-center text-[#FAFF00] hover:scale-110 transition-all z-10"
+                        >
+                          <div className="relative w-full h-full flex items-center justify-center">
+                            <Plus className={`w-5 h-5 transition-all duration-300 ${quantity > 0 ? 'opacity-0 group-hover/qty:opacity-100' : 'opacity-100'}`} />
+                            {quantity > 0 && (
+                              <span className="absolute inset-0 flex items-center justify-center font-mono text-xs font-black group-hover/qty:opacity-0 transition-all duration-300">
+                                {quantity}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+
+                        {/* Secondary Controls - Symmetrical Gaps */}
+                        <div className="flex items-center justify-between w-full pl-10 pr-3 opacity-0 group-hover/qty:opacity-100 transition-all duration-500 pointer-events-none group-hover/qty:pointer-events-auto">
+                          <div className="flex-1 flex items-center justify-center">
+                            <span className="text-[#FAFF00] font-mono text-xs font-black">
+                              {quantity}
+                            </span>
+                          </div>
+                          
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (quantity > 0) {
+                                updateQuantity(item.id, quantity - 1);
+                              }
+                            }}
+                            className="text-[#FAFF00] hover:scale-125 shrink-0 w-8 h-10 flex items-center justify-center transition-transform"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
           ))}

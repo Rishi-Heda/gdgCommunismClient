@@ -13,14 +13,18 @@ import {
   Menu,
   X,
   Zap,
-  Info
+  Info,
+  ShoppingBag
 } from 'lucide-react';
 import { mockWealth } from '../../data/mock';
+import { useCart } from '../../context/CartContext';
 
 const FloatingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,9 +88,9 @@ const FloatingHeader = () => {
           <div className="hidden md:block w-[1px] h-6 bg-white/10 mx-1" />
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3 pr-2">
             {/* Dual Balance Display */}
-            <div className="hidden lg:flex items-center gap-2 mr-2">
+            <div className="hidden lg:flex items-center gap-2 mr-1">
               <div className="flex flex-col items-end">
                 <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#FAFF00]">
                   <span>{mockWealth.mindCredits.toLocaleString()}</span>
@@ -103,8 +107,17 @@ const FloatingHeader = () => {
             <Link to="/marketplace" className="header-nav-link relative p-2.5 rounded-full hover:bg-background-base hover:text-accent-primary transition-all duration-300 group">
               <Store className="w-4 h-4" />
             </Link>
+
+            <Link to="/cart" className="header-nav-link relative p-2.5 rounded-full hover:bg-background-base hover:text-accent-primary transition-all duration-300 group">
+              <ShoppingBag className="w-4 h-4" />
+              {cartCount > 0 && (
+                <div className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 bg-accent-primary text-black text-[9px] font-black rounded-full flex items-center justify-center animate-bounce ring-2 ring-black">
+                  {cartCount}
+                </div>
+              )}
+            </Link>
             
-            <Link to="/settings" className="header-nav-link w-10 h-10 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary transition-all ml-1 overflow-hidden">
+            <Link to="/settings" className="header-nav-link w-10 h-10 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary transition-all overflow-hidden shrink-0">
               <User className="w-4 h-4" />
             </Link>
 
@@ -126,7 +139,7 @@ const FloatingHeader = () => {
           ${isMobileMenuOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}
         `}>
           <div className="grid grid-cols-2 gap-2">
-            {navItems.map((item) => (
+            {[...navItems, { name: 'Cart', path: '/cart', icon: ShoppingBag }].map((item) => (
               <NavLink
                 key={item.name}
                 to={item.path}
@@ -139,7 +152,14 @@ const FloatingHeader = () => {
                   }
                 `}
               >
-                <item.icon className="w-5 h-5 mb-2" />
+                <div className="relative">
+                  <item.icon className="w-5 h-5 mb-2" />
+                  {item.name === 'Cart' && cartCount > 0 && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent-primary text-black text-[9px] font-black rounded-full flex items-center justify-center">
+                      {cartCount}
+                    </div>
+                  )}
+                </div>
                 <span className="text-[10px] font-mono uppercase tracking-widest">{item.name}</span>
               </NavLink>
             ))}
