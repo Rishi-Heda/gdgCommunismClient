@@ -18,6 +18,49 @@
   --font-sans: "Inter", sans-serif;
 }
 
+[data-theme="inverted"] {
+  --color-background-base: #FAFF00;
+  --color-text-primary: #000000;
+  --color-text-secondary: #111111;
+  --color-text-muted: #222222;
+  --color-accent-primary: #000000;
+  --color-accent-glow: rgba(0, 0, 0, 0.08);
+  --color-surface-card: rgba(0, 0, 0, 0.04);
+  --color-surface-elevated: rgba(0, 0, 0, 0.08);
+  --color-border-default: rgba(0, 0, 0, 0.15);
+}
+
+.inverted-dark-container {
+  background-color: #000 !important;
+  color: #FAFF00 !important;
+}
+
+.inverted-dark-container .text-text-muted,
+.inverted-dark-container .text-text-secondary {
+  color: rgba(250, 255, 0, 0.6) !important;
+}
+
+[data-theme="inverted"] .header-nav-link,
+[data-theme="inverted"] .header-nav-link svg {
+  color: rgba(250, 255, 0, 0.6) !important;
+}
+
+[data-theme="inverted"] .header-nav-link:hover,
+[data-theme="inverted"] .header-nav-link:hover svg {
+  color: #FAFF00 !important;
+  background-color: rgba(250, 255, 0, 0.1) !important;
+}
+
+[data-theme="inverted"] .header-nav-link.active,
+[data-theme="inverted"] .header-nav-link[aria-current="page"] svg {
+  background-color: #FAFF00 !important;
+  color: #000 !important;
+}
+
+[data-theme="inverted"] .header-logo-icon {
+  color: #FAFF00 !important;
+}
+
 @layer base {
   :root {
     background-color: var(--color-background-base);
@@ -67,4 +110,23 @@
 
 .card-hover {
   @apply transition-all duration-300 hover:border-accent-primary hover:shadow-[0_0_20px_rgba(250,255,0,0.05)];
+}
+
+/* Marquee Animations for ScrollingTape component */
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee-left {
+  animation: marquee-left var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right var(--duration, 40s) linear infinite;
 }

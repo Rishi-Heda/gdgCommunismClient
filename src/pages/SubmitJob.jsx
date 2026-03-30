@@ -10,7 +10,7 @@ import {
   Clock,
   ArrowRight
 } from 'lucide-react';
-import { mockCredits } from '../data/mock';
+import { mockWealth } from '../data/mock';
 import ScrambleText from '../components/common/ScrambleText';
 
 const SubmitJob = () => {
@@ -220,8 +220,8 @@ const SubmitJob = () => {
           <div className="pt-6 border-t border-[#222] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="text-[10px] font-mono text-[#555] uppercase tracking-widest">Account Balance:</div>
-              <div className="text-xl font-mono font-bold text-accent-primary">
-                <ScrambleText text={mockCredits.balance.toString()} /> HC
+              <div className="text-xl font-bold font-mono">
+                <ScrambleText text={mockWealth.mindCredits.toLocaleString()} /> MC
               </div>
             </div>
             

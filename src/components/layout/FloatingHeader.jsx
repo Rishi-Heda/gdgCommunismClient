@@ -8,12 +8,14 @@ import {
   Wallet, 
   Settings,
   Hexagon,
-  Search,
-  Bell,
+  Store,
   User,
   Menu,
-  X
+  X,
+  Zap,
+  Info
 } from 'lucide-react';
+import { mockWealth } from '../../data/mock';
 
 const FloatingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -43,7 +45,7 @@ const FloatingHeader = () => {
         {/* Isolated Logo Pill */}
         <Link to="/" className="w-14 h-14 bg-[#000] rounded-full border border-white/5 flex items-center justify-center group shadow-2xl hover:border-accent-primary/30 transition-all duration-500 overflow-hidden relative">
           <div className="absolute inset-0 bg-accent-glow opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Hexagon className="w-6 h-6 text-accent-primary group-hover:rotate-90 transition-transform duration-700 relative z-10" />
+          <Hexagon className="header-logo-icon w-6 h-6 text-accent-primary group-hover:rotate-90 transition-transform duration-700 relative z-10" />
         </Link>
 
         {/* Main Navigation Capsule */}
@@ -59,7 +61,7 @@ const FloatingHeader = () => {
                 key={item.name}
                 to={item.path}
                 className={({ isActive }) => `
-                  group relative flex items-center gap-0 hover:gap-2 px-3.5 py-2.5 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.15em] transition-all duration-500 ease-in-out overflow-hidden
+                  header-nav-link group relative flex items-center gap-0 hover:gap-2 px-3.5 py-2.5 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.15em] transition-all duration-500 ease-in-out overflow-hidden
                   ${isActive 
                     ? 'bg-accent-primary text-black px-5 gap-2' 
                     : 'text-text-secondary hover:bg-background-base hover:text-accent-primary hover:px-5'
@@ -83,16 +85,28 @@ const FloatingHeader = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-1">
-            <button className="p-2.5 rounded-full text-text-muted hover:bg-background-base hover:text-accent-primary transition-all duration-300">
-              <Search className="w-4 h-4" />
-            </button>
-            <button className="relative p-2.5 rounded-full text-text-muted hover:bg-background-base hover:text-accent-primary transition-all duration-300">
-              <Bell className="w-4 h-4" />
-              <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-accent-primary rounded-full ring-2 ring-[#000]" />
-            </button>
+            {/* Dual Balance Display */}
+            <div className="hidden lg:flex items-center gap-2 mr-2">
+              <div className="flex flex-col items-end">
+                <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#FAFF00]">
+                  <span>{mockWealth.mindCredits.toLocaleString()}</span>
+                  <span className="opacity-50">MC</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-[#888]">
+                  <span>{mockWealth.hiveCoins.toLocaleString()}</span>
+                  <span className="opacity-50 text-[8px]">HC</span>
+                </div>
+              </div>
+            </div>
+
+
+            <Link to="/marketplace" className="header-nav-link relative p-2.5 rounded-full hover:bg-background-base hover:text-accent-primary transition-all duration-300 group">
+              <Store className="w-4 h-4" />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent-primary rounded-full ring-2 ring-[#000] scale-0 group-hover:scale-100 transition-transform" />
+            </Link>
             
-            <Link to="/settings" className="w-10 h-10 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary transition-all ml-1 overflow-hidden">
-              <User className="w-4 h-4 text-text-muted" />
+            <Link to="/settings" className="header-nav-link w-10 h-10 rounded-full bg-surface-elevated border border-white/5 flex items-center justify-center hover:border-accent-primary transition-all ml-1 overflow-hidden">
+              <User className="w-4 h-4" />
             </Link>
 
             {/* Mobile Menu Toggle */}
@@ -119,7 +133,7 @@ const FloatingHeader = () => {
                 to={item.path}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={({ isActive }) => `
-                  flex flex-col items-center justify-center p-4 rounded-2xl border transition-all
+                  header-nav-link flex flex-col items-center justify-center p-4 rounded-2xl border transition-all
                   ${isActive 
                     ? 'bg-accent-glow border-accent-primary/30 text-accent-primary' 
                     : 'bg-white/5 border-transparent text-text-secondary'

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { mockJobs, mockNodes, mockActivity, mockCredits } from '../data/mock';
 import { Link } from 'react-router-dom';
 import ScrambleText from '../components/common/ScrambleText';
-import { 
-  Users, 
-  Settings, 
-  TrendingUp, 
-  ArrowUpRight, 
+import {
+  Users,
+  Settings,
+  TrendingUp,
+  ArrowUpRight,
   MoreHorizontal,
   LayoutGrid,
   Plus,
@@ -20,8 +20,9 @@ const Dashboard = () => {
   const stats = [
     { label: 'Active Contributors', value: '1,248', trend: '+12 today', icon: Users },
     { label: 'Jobs Running', value: '412', trend: '+5 today', icon: Settings },
-    { label: 'Compute Hours', value: '18.4k', trend: '+1.2k today', icon: TrendingUp },
-    { label: 'Credits Earned', value: mockCredits.balance.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Network Points', value: '4,280', trend: 'Global Avg', icon: Hexagon },
+    { label: 'Credits Balance', value: mockWealth.mindCredits.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Active Tasks', value: '42', trend: '1.2s avg latency', icon: Clock },
   ];
 
   const getStatusColor = (status) => {
@@ -60,13 +61,12 @@ const Dashboard = () => {
         </div>
 
         <div className="flex gap-3 items-center">
-          <button 
+          <button
             onClick={() => setIsContributing(!isContributing)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${
-              isContributing 
-                ? 'bg-accent-primary/10 border-accent-primary text-accent-primary' 
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 ${isContributing
+                ? 'bg-accent-primary/10 border-accent-primary text-accent-primary'
                 : 'bg-surface-elevated border-[#222] text-text-muted'
-            }`}
+              }`}
           >
             <span className={`text-[10px] font-mono uppercase flex items-center gap-1.5`}>
               {isContributing ? (
@@ -82,9 +82,9 @@ const Dashboard = () => {
               )}
             </span>
           </button>
-          
-          <Link 
-            to="/submit" 
+
+          <Link
+            to="/submit"
             className="bg-accent-primary text-black text-xs font-mono font-bold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity whitespace-nowrap"
           >
             Submit a Job
@@ -138,9 +138,9 @@ const Dashboard = () => {
               <span>34%</span>
             </div>
             <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-              <div 
-                className="bg-text-muted h-full transition-all duration-1000" 
-                style={{ width: '34%' }} 
+              <div
+                className="bg-text-muted h-full transition-all duration-1000"
+                style={{ width: '34%' }}
               />
             </div>
           </div>
@@ -152,9 +152,9 @@ const Dashboard = () => {
               <span>67%</span>
             </div>
             <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-              <div 
-                className="bg-accent-primary h-full transition-all duration-1000" 
-                style={{ width: '67%' }} 
+              <div
+                className="bg-accent-primary h-full transition-all duration-1000"
+                style={{ width: '67%' }}
               />
             </div>
           </div>
@@ -166,9 +166,9 @@ const Dashboard = () => {
               <span>51%</span>
             </div>
             <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-              <div 
-                className="bg-status-yellow h-full transition-all duration-1000" 
-                style={{ width: '51%' }} 
+              <div
+                className="bg-status-yellow h-full transition-all duration-1000"
+                style={{ width: '51%' }}
               />
             </div>
           </div>
@@ -232,9 +232,9 @@ const Dashboard = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="flex-1 min-w-[80px] bg-surface-elevated h-1 rounded-full overflow-hidden">
-                            <div 
-                              className="bg-accent-primary h-full transition-all duration-1000" 
-                              style={{ width: `${job.progress}%` }} 
+                            <div
+                              className="bg-accent-primary h-full transition-all duration-1000"
+                              style={{ width: `${job.progress}%` }}
                             />
                           </div>
                           <span className="text-[10px] font-mono text-text-muted w-8">{job.progress}%</span>
@@ -255,7 +255,7 @@ const Dashboard = () => {
               <h2 className="text-lg font-bold">Credit Activity</h2>
               <p className="text-xs text-text-muted mt-1 font-mono uppercase tracking-[0.1em]">YOUR BALANCE & TRANSACTIONS</p>
             </div>
-            
+
             <div className="p-6 pb-4 border-b border-[#222]">
               <div className="text-4xl font-mono font-bold text-accent-primary">
                 <ScrambleText text={mockCredits.balance.toLocaleString()} />
@@ -295,7 +295,7 @@ const Dashboard = () => {
           </div>
           <LayoutGrid className="w-4 h-4 text-text-muted hover:text-accent-primary cursor-pointer transition-colors" />
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Pinned Your Node */}
           <div className="bg-surface-card border border-accent-primary p-5 rounded-2xl relative">
@@ -308,7 +308,7 @@ const Dashboard = () => {
               </div>
               <div className={`w-2 h-2 rounded-full bg-status-green animate-pulse`} />
             </div>
-            
+
             <div className="space-y-3">
               {/* CPU */}
               <div>
@@ -352,7 +352,7 @@ const Dashboard = () => {
                 </div>
                 <div className={`w-2 h-2 rounded-full ${node.status === 'ONLINE' ? 'bg-status-green' : 'bg-status-red'} animate-pulse`} />
               </div>
-              
+
               <div className="space-y-3">
                 {/* CPU */}
                 <div>
@@ -403,11 +403,10 @@ const Dashboard = () => {
               <div key={event.id} className="flex gap-4 group">
                 <div className="flex flex-col items-center">
                   <div className={`p-1 rounded-full bg-surface-elevated border border-[#222] group-hover:border-accent-primary transition-colors`}>
-                    <div className={`w-1.5 h-1.5 rounded-full ${
-                      event.color === 'green' ? 'bg-status-green' : 
-                      event.color === 'red' ? 'bg-status-red' : 
-                      event.color === 'yellow' ? 'bg-status-yellow' : 'bg-text-secondary'
-                    }`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${event.color === 'green' ? 'bg-status-green' :
+                        event.color === 'red' ? 'bg-status-red' :
+                          event.color === 'yellow' ? 'bg-status-yellow' : 'bg-text-secondary'
+                      }`} />
                   </div>
                   <div className="w-[1px] flex-1 bg-[#222] mt-2 group-last:hidden" />
                 </div>
