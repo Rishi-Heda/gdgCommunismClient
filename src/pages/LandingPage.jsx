@@ -42,12 +42,12 @@ const LandingPage = () => {
       <FloatingHeader />
 
       {/* Hero Section */}
-      <section className="relative pt-48 pb-20 px-6 md:px-12 flex flex-col items-center text-center">
+      <section className="relative pt-32 pb-20 px-6 md:px-12 flex flex-col items-center text-center">
         {/* Yellow glow behind hero */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-primary/5 blur-[120px] rounded-full -z-10" />
 
         {/* branding block */}
-        <div className="flex items-center gap-4 mb-14 px-8 py-4 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-[0_0_50px_rgba(250,255,0,0.05)] group hover:border-accent-primary/50 transition-all duration-700">
+        <div className="flex items-center gap-4 mb-10 px-8 py-4 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-[0_0_50px_rgba(250,255,0,0.05)] group hover:border-accent-primary/50 transition-all duration-700">
           <Hexagon className="w-7 h-7 text-accent-primary group-hover:rotate-180 transition-transform duration-1000" />
           <span className="text-[22px] font-black tracking-[0.6em] uppercase text-white/90 ml-2">
             <ScrambleText text="HiveMind" />
@@ -57,17 +57,17 @@ const LandingPage = () => {
           <ScrambleText text="DECENTRALIZED COMPUTE NETWORK" />
         </div>
 
-        <h1 className="text-5xl md:text-8xl font-black max-w-5xl leading-[0.95] mb-8 tracking-tighter">
+        <h1 className="text-5xl md:text-8xl font-black max-w-5xl leading-[0.95] mb-6 tracking-tighter">
           <ScrambleText text="Your idle GPU." /><br />
           <span className="text-text-secondary opacity-50"><ScrambleText text="Someone's" /></span> <span className="text-accent-primary"><ScrambleText text="breakthrough." /></span>
         </h1>
 
-        <p className="text-text-secondary text-lg md:text-xl max-w-2xl mb-12">
+        <p className="text-text-secondary text-lg md:text-xl max-w-2xl mb-10">
           HiveMind connects idle CPU and GPU resources with researchers and developers
           who need compute, without the proprietary cloud bill.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-20 w-full justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 mb-14 w-full justify-center">
           <Link to="/submit" className="w-full sm:w-auto">
             <button className="w-full sm:w-auto bg-accent-primary text-black px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
               Submit a Job <ArrowRight className="w-5 h-5" />
