@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Hexagon, ArrowRight, Zap, Shield, Wallet } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Wallet } from 'lucide-react';
 import ScrambleText from '../components/common/ScrambleText';
+import FloatingHeader from '../components/layout/FloatingHeader';
 
 const LandingPage = () => {
   const stats = [
@@ -32,27 +33,8 @@ const LandingPage = () => {
     <div className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in relative">
       <div className="noise" />
       
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 h-20 border-b border-[#222]/50 bg-background-base/80 backdrop-blur-xl z-50 px-6 md:px-12 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Hexagon className="w-8 h-8 text-accent-primary" />
-          <span className="text-xl font-mono font-bold tracking-tight">
-            <ScrambleText text="HiveMind" />
-          </span>
-        </div>
-        
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#how-it-works" className="text-sm font-medium text-text-secondary hover:text-accent-primary transition-colors">How it works</a>
-          <a href="#docs" className="text-sm font-medium text-text-secondary hover:text-accent-primary transition-colors">Docs</a>
-          <Link to="/dashboard" className="text-sm font-medium text-text-secondary hover:text-accent-primary transition-colors">Dashboard</Link>
-        </div>
-        
-        <Link to="/dashboard">
-          <button className="bg-accent-primary text-black px-6 py-2.5 rounded-lg font-semibold text-sm hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(250,255,0,0.1)]">
-            Launch App
-          </button>
-        </Link>
-      </nav>
+      {/* Premium Navigation Header */}
+      <FloatingHeader />
 
       {/* Hero Section */}
       <section className="relative pt-48 pb-20 px-6 md:px-12 flex flex-col items-center text-center">
