@@ -55,7 +55,7 @@ const FloatingHeader = () => {
               <Hexagon className="w-7 h-7 text-accent-primary group-hover:rotate-90 transition-transform duration-500" />
               <div className="absolute inset-0 bg-accent-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <span className="text-lg font-mono font-black tracking-tighter hidden sm:inline text-text-primary">HID<span className="text-accent-primary">MIND</span></span>
+            <span className="text-lg font-mono font-black tracking-tighter hidden sm:inline text-text-primary">HIVE<span className="text-accent-primary">MIND</span></span>
           </Link>
 
           {/* Desktop Nav */}
