@@ -17,9 +17,48 @@ import { useCart } from '../context/CartContext';
 const Marketplace = () => {
   const [activeCategory, setActiveCategory] = useState('All Assets');
   const [exchangeAmount, setExchangeAmount] = useState(1000);
+  const [balances, setBalances] = useState({
+    hiveCoins: mockWealth.hiveCoins,
+    mindCredits: mockWealth.mindCredits,
+  });
+  const [exchangeNotice, setExchangeNotice] = useState(null);
   const { cartItems, addToCart, updateQuantity } = useCart();
-  
-  const mcReceive = exchangeAmount / mockWealth.exchangeRate;
+
+  const exchangeRate = mockWealth.exchangeRate;
+  const normalizedExchangeAmount = Number.isFinite(exchangeAmount) ? exchangeAmount : 0;
+  const mcReceive = normalizedExchangeAmount > 0 ? normalizedExchangeAmount / exchangeRate : 0;
+
+  const handleExchange = () => {
+    const amount = Number(exchangeAmount);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setExchangeNotice({
+        type: 'error',
+        text: 'ENTER A VALID HIVE COIN AMOUNT TO EXCHANGE.',
+      });
+      return;
+    }
+
+    if (amount > balances.hiveCoins) {
+      setExchangeNotice({
+        type: 'error',
+        text: 'INSUFFICIENT HIVE COINS FOR THIS EXCHANGE.',
+      });
+      return;
+    }
+
+    const received = amount / exchangeRate;
+
+    setBalances((prev) => ({
+      hiveCoins: Number((prev.hiveCoins - amount).toFixed(2)),
+      mindCredits: Number((prev.mindCredits + received).toFixed(2)),
+    }));
+
+    setExchangeNotice({
+      type: 'success',
+      text: `EXCHANGE COMPLETE: ${amount.toLocaleString()} HC → ${received.toLocaleString(undefined, { maximumFractionDigits: 2 })} MC`,
+    });
+  };
 
   const allItems = [
     {
@@ -134,12 +173,23 @@ const Marketplace = () => {
                     <input
                       type="number"
                       value={exchangeAmount}
-                      onChange={(e) => setExchangeAmount(Number(e.target.value))}
+                      onChange={(e) => {
+                        const nextAmount = Number(e.target.value);
+                        setExchangeAmount(Number.isFinite(nextAmount) ? nextAmount : 0);
+                        if (exchangeNotice) {
+                          setExchangeNotice(null);
+                        }
+                      }}
                       className="w-full bg-[#FAFF00]/10 border-2 border-[#FAFF00]/20 rounded-3xl px-8 py-6 text-4xl font-black focus:outline-none focus:border-[#FAFF00] transition-all text-[#FAFF00] placeholder:text-[#FAFF00]/30"
                     />
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-end">
                       <span className="text-xs font-mono font-bold text-[#FAFF00]">HC</span>
-                      <span className="text-[10px] text-white/50 underline cursor-pointer hover:text-white transition-colors" onClick={() => setExchangeAmount(mockWealth.hiveCoins)}>MAX</span>
+                      <span className="text-[10px] text-white/50 underline cursor-pointer hover:text-white transition-colors" onClick={() => {
+                        setExchangeAmount(balances.hiveCoins);
+                        if (exchangeNotice) {
+                          setExchangeNotice(null);
+                        }
+                      }}>MAX</span>
                     </div>
                   </div>
                 </div>
@@ -153,7 +203,7 @@ const Marketplace = () => {
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-[0.2em] mb-4 text-[#FAFF00]/70">You Receive (Mind Credits)</label>
                   <div className="bg-accent-primary/5 border-2 border-dashed border-accent-primary/20 rounded-3xl px-8 py-6 flex justify-between items-center">
-                    <span className="text-4xl font-black text-white">{mcReceive.toLocaleString()}</span>
+                    <span className="text-4xl font-black text-white">{mcReceive.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                     <span className="text-sm font-mono font-bold text-white uppercase tracking-wider">MC</span>
                   </div>
                 </div>
@@ -167,7 +217,7 @@ const Marketplace = () => {
                   <div className="space-y-4 text-sm font-medium">
                     <div className="flex justify-between border-b border-accent-primary/10 pb-2">
                       <span className="text-white/60 font-mono">RATE</span>
-                      <span className="text-white font-bold">10 HC : 1 MC</span>
+                      <span className="text-white font-bold">{exchangeRate} HC : 1 MC</span>
                     </div>
                     <div className="flex justify-between border-b border-accent-primary/10 pb-2">
                       <span className="text-white/60 font-mono">FEE</span>
@@ -180,9 +230,24 @@ const Marketplace = () => {
                   </div>
                 </div>
 
-                <button className="w-full bg-black text-[#FAFF00] border-2 border-[#FAFF00] py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-[#FAFF00] hover:text-black active:scale-95 transition-all mt-8">
+                <button
+                  onClick={handleExchange}
+                  className="w-full bg-black text-[#FAFF00] border-2 border-[#FAFF00] py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-[#FAFF00] hover:text-black active:scale-95 transition-all mt-8"
+                >
                   Confirm Exchange
                 </button>
+
+                {exchangeNotice && (
+                  <div
+                    className={`mt-4 rounded-xl border px-4 py-3 text-[10px] font-mono font-bold uppercase tracking-[0.08em] whitespace-nowrap text-center flex items-center justify-center ${
+                      exchangeNotice.type === 'success'
+                        ? 'border-status-green/30 bg-status-green/10 text-status-green'
+                        : 'border-status-red/30 bg-status-red/10 text-status-red'
+                    }`}
+                  >
+                    {exchangeNotice.text}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -197,11 +262,11 @@ const Marketplace = () => {
             <div className="space-y-4">
               <div className="p-6 rounded-3xl bg-black inverted-dark-container border border-white/5">
                 <div className="text-[10px] font-mono uppercase tracking-widest text-[#FAFF00]/70 mb-1">Hive Coins (HC)</div>
-                <div className="text-3xl font-black tracking-tighter text-white">{mockWealth.hiveCoins.toLocaleString()}</div>
+                <div className="text-3xl font-black tracking-tighter text-white">{balances.hiveCoins.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
               <div className="p-6 rounded-3xl bg-white border border-black/10">
                 <div className="text-[10px] font-mono uppercase tracking-widest opacity-50 mb-1">Mind Credits (MC)</div>
-                <div className="text-3xl font-black tracking-tighter">{mockWealth.mindCredits.toLocaleString()}</div>
+                <div className="text-3xl font-black tracking-tighter">{balances.mindCredits.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               </div>
             </div>
           </div>
@@ -235,7 +300,15 @@ const Marketplace = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredItems.map((item) => (
+          {activeCategory === 'Neural Weights' && filteredItems.length === 0 ? (
+            <div className="md:col-span-3 bg-surface-card border-2 border-dashed border-black/20 rounded-[40px] p-10 text-center">
+              <h3 className="text-xl font-black uppercase tracking-tight mb-3">Neural Weights Coming Soon</h3>
+              <p className="text-text-secondary text-sm max-w-2xl mx-auto">
+                Placeholder slot reserved for upcoming model weight drops and licensed checkpoint bundles.
+              </p>
+            </div>
+          ) : (
+          filteredItems.map((item) => (
             <div key={item.id} className="bg-white border-2 border-black/5 rounded-[40px] p-8 hover:border-black transition-all cursor-pointer group h-full flex flex-col">
               {item.image && (
                 <div className="w-full h-48 rounded-[24px] overflow-hidden bg-black/5 flex items-center justify-center mb-6">
@@ -308,7 +381,7 @@ const Marketplace = () => {
                 </div>
               </div>
             </div>
-          ))}
+          ))) }
         </div>
       </div>
     </div>
