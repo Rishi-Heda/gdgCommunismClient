@@ -1,18 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #FAFF00;
-  --color-surface: #111111;
+  --color-accent-primary: #FAFF00;
+  --color-accent-glow: rgba(250, 255, 0, 0.12);
+  --color-background-base: #080808;
+  --color-surface-card: #111111;
   --color-surface-elevated: #181818;
   --color-border-default: #222222;
+  --color-text-primary: #F2F2F2;
+  --color-text-secondary: #888888;
+  --color-text-muted: #444444;
+  --color-status-green: #39FF6A;
+  --color-status-red: #FF4444;
+  --color-status-yellow: #FAFF00;
+
   --font-mono: "JetBrains Mono", monospace;
   --font-sans: "Inter", sans-serif;
 }
 
 @layer base {
   :root {
-    background-color: #080808;
-    color: #F2F2F2;
+    background-color: var(--color-background-base);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6, .font-mono {
+    font-family: var(--font-mono);
   }
 }
 
@@ -30,17 +44,21 @@
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080808;
+  background: var(--color-background-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: #222;
+  background: var(--color-border-default);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FAFF00;
+  background: var(--color-accent-primary);
 }
 
 .dot-grid {
-  background-image: radial-gradient(#222 1px, transparent 1px);
+  background-image: radial-gradient(var(--color-border-default) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:border-accent-primary hover:shadow-[0_0_20px_rgba(250,255,0,0.05)];
 }

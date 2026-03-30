@@ -13,7 +13,8 @@ import {
   Terminal,
   Activity,
   History,
-  Info
+  Info,
+  MoreVertical
 } from 'lucide-react';
 import { mockJobs } from '../data/mock';
 

@@ -191,7 +191,7 @@ const SubmitJob = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               { name: 'Standard', cost: '12 – 18', desc: 'Queued normally', icon: Clock },
-              { name: 'Priority', cost: '25 – 40', desc: 'Jump the queue', icon: zap, glow: true },
+              { name: 'Priority', cost: '25 – 40', desc: 'Jump the queue', icon: Zap, glow: true },
               { name: 'Urgent', cost: '80 – 120', desc: 'High availability', icon: ShieldCheck, accent: true }
             ].map((p) => (
               <button
