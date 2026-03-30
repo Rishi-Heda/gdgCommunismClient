@@ -1,5 +1,7 @@
 import os
 import shutil
+import stat
+import time
 import zipfile
 from pathlib import Path
 
@@ -31,13 +33,42 @@ def clean_workspace():
 
     for directory in [INPUTS_DIR, OUTPUTS_DIR]:
         for item in directory.iterdir():
-            try:
-                if item.is_dir():
-                    shutil.rmtree(item)
-                else:
-                    item.unlink()
-            except Exception as e:
-                print(f"Warning: Failed to delete {item}: {e}")
+            _delete_with_retries(item)
+
+
+def _clear_readonly(func, path, exc_info):
+    """Best-effort Windows-friendly handler for read-only files."""
+    try:
+        os.chmod(path, stat.S_IWRITE)
+        func(path)
+    except Exception:
+        pass
+
+
+def _delete_with_retries(path: Path, retries: int = 5, delay_seconds: float = 1.0) -> None:
+    """
+    Retry deletion to tolerate transient file locks from Windows, Defender,
+    Explorer previews, or OneDrive sync.
+    """
+    last_error = None
+
+    for attempt in range(1, retries + 1):
+        try:
+            if not path.exists():
+                return
+
+            if path.is_dir():
+                shutil.rmtree(path, onerror=_clear_readonly)
+            else:
+                os.chmod(path, stat.S_IWRITE)
+                path.unlink()
+            return
+        except Exception as e:
+            last_error = e
+            if attempt < retries:
+                time.sleep(delay_seconds)
+
+    print(f"Warning: Failed to delete {path} after {retries} attempts: {last_error}")
 
 def extract_inputs(zip_file_path: Path) -> bool:
     """
