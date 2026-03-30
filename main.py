@@ -15,13 +15,18 @@ from src.core.state_manager import (
 from src.core.config import config
 
 from src.api.routes import router as api_router
-from src.network.client import register_node, fetch_task
+from src.network.client import (
+    download_assigned_artifact,
+    fetch_assignment,
+    push_job_update,
+    register_node,
+    upload_job_result_bundle,
+)
 from src.network.heartbeat import start_heartbeat_loop
 
 from src.hardware.idle_monitor import start_idle_monitor_loop
 from src.docker_engine.container import execute_task
-from src.storage.file_manager import clean_workspace, extract_inputs, compress_outputs, INPUTS_DIR
-from src.network.client import download_dataset, submit_task_result
+from src.storage.file_manager import archive_execution_bundle, clean_workspace, extract_inputs, INPUTS_DIR
 from src.storage.local_db import increment_task_completed
 
 async def task_polling_engine():
@@ -35,37 +40,68 @@ async def task_polling_engine():
         state = get_full_system_state()
 
         if state["app_mode"] == AppMode.DONATE.value and state["engine_status"] == EngineStatus.READY.value:
-            print("Asking Master Server for tasks...")
-            task_data = await fetch_task()
+            print("Asking server for assignment...")
+            task_data = await fetch_assignment()
 
             if task_data:
-                task_id = task_data.get("task_id")
-                docker_image = task_data.get("docker_image")
-                dataset_url = task_data.get("dataset_url")
+                task_id = task_data.get("jobID")
+                docker_image = config.DEFAULT_DOCKER_IMAGE
 
                 print(f"Received Task {task_id}. Beginning execution pipeline...")
 
                 clean_workspace()
 
-                zip_path = INPUTS_DIR / "dataset.zip"
-                download_success = await download_dataset(dataset_url, zip_path)
+                await push_job_update(task_id, status="running", progress=5, logs=["Assignment accepted"])
+                downloaded_zip_path = None
+                execution_ok = False
+                upload_result_meta = None
+
+                try:
+                    zip_path = await download_assigned_artifact(task_id)
+                    downloaded_zip_path = zip_path
+                    download_success = True
+                except Exception as e:
+                    print(f"Failed to download assigned artifact: {e}")
+                    download_success = False
 
                 if download_success:
                     extract_success = extract_inputs(zip_path)
 
                     if extract_success:
-                        await execute_task(task_id, docker_image)
+                        execution_ok = await execute_task(task_id, docker_image)
 
                         final_state = get_full_system_state()
                         if final_state["engine_status"] != EngineStatus.ABORTING.value:
-                            results_zip_path = compress_outputs(task_id)
-                            upload_success = await submit_task_result(task_id, results_zip_path)
+                            try:
+                                bundle_path = archive_execution_bundle(task_id, source_zip_path=downloaded_zip_path)
+                                upload_result_meta = await upload_job_result_bundle(task_id, bundle_path)
+                            except Exception as e:
+                                print(f"Failed to archive/upload result bundle: {e}")
 
-                            if upload_success:
+                            if execution_ok:
+                                await push_job_update(
+                                    task_id,
+                                    status="completed",
+                                    progress=100,
+                                    logs=["Task completed"],
+                                    result={"ok": True, "result_bundle": upload_result_meta},
+                                )
                                 increment_task_completed(hours_taken=0.5, credits_earned=10)
                                 print(f"Pipeline complete for Task {task_id}!")
+                            else:
+                                await push_job_update(
+                                    task_id,
+                                    status="failed",
+                                    progress=100,
+                                    logs=["Task failed"],
+                                    error="Execution failed",
+                                    result={"result_bundle": upload_result_meta},
+                                )
                     else:
+                        await push_job_update(task_id, status="failed", progress=100, logs=["Input extraction failed"], error="Extract failed")
                         print(f"Skipping Task {task_id}: downloaded inputs could not be extracted.")
+                else:
+                    await push_job_update(task_id, status="failed", progress=100, logs=["Artifact download failed"], error="TCP download failed")
 
                 clean_workspace()
 
@@ -127,11 +163,17 @@ app.include_router(api_router, prefix="/api")
 
 @app.get("/")
 async def root():
+    docs_url = f"http://{config.LOCAL_DASHBOARD_HOST}:{config.LOCAL_DASHBOARD_PORT}/docs"
     return {
         "message": "Compute Node Engine is Running",
         "current_state": get_full_system_state(),
-        "dashboard_docs": "http://127.0.0.1:8000/docs",
+        "dashboard_docs": docs_url,
     }
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run(
+        "main:app",
+        host=config.LOCAL_DASHBOARD_HOST,
+        port=config.LOCAL_DASHBOARD_PORT,
+        reload=False,
+    )

@@ -193,21 +193,21 @@ async def _run_step(task_id: str, docker_image: str, step: dict[str, Any], conte
                 pass
 
 
-async def execute_task(task_id: str, docker_image: str):
+async def execute_task(task_id: str, docker_image: str) -> bool:
     """
     Run downloaded Python tasks, optionally following a manifest-defined flow,
     while capturing structured execution logs and checkpoint snapshots.
     """
     if not docker_client:
         print("Docker not available. Cannot execute task.")
-        return
+        return False
 
     manifest = load_task_manifest(INPUTS_DIR)
     steps = resolve_execution_steps(INPUTS_DIR, manifest)
     if not steps:
         print("No Python files were found in the downloaded inputs. Cannot execute task.")
         await update_engine(EngineStatus.OFFLINE)
-        return
+        return False
 
     context_bundle = load_context_bundle(INPUTS_DIR, manifest, steps)
     checkpoint_plan = build_checkpoint_plan(manifest)
@@ -218,7 +218,7 @@ async def execute_task(task_id: str, docker_image: str):
     except Exception as e:
         print(f"Failed to pull image: {e}")
         await update_engine(EngineStatus.OFFLINE)
-        return
+        return False
 
     print(
         f"Starting Task {task_id} with {config.MAX_CPU_CORES_TO_DONATE} cores and "
@@ -235,9 +235,11 @@ async def execute_task(task_id: str, docker_image: str):
             await _run_step(task_id, docker_image, step, context_bundle, progress_base, progress_max, checkpoint_plan)
 
         _append_event(task_id, "task", "lifecycle", "Task execution completed", progress=100)
+        return True
     except Exception as e:
         _append_event(task_id, "task", "error", str(e), level="error")
         print(f"Container execution error: {e}")
+        return False
     finally:
         final_state = get_full_system_state()
         next_status = (

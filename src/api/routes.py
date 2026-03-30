@@ -11,7 +11,7 @@ from src.core.state_manager import (
     set_current_state,
 )
 from src.hardware.detectors import get_hardware_specs
-from src.network.client import submit_job_request
+from src.network.client import register_node, send_heartbeat, submit_job_request, trigger_scheduler
 from src.storage.file_manager import ARCHIVES_DIR, setup_workspace
 from src.storage.local_db import get_node_history
 
@@ -38,6 +38,10 @@ async def get_status():
 async def update_app_mode(request: ModeUpdateRequest):
     try:
         await set_current_state(request.mode)
+        if request.mode == AppMode.DONATE:
+            await register_node()
+            await send_heartbeat()
+            await trigger_scheduler()
         return {
             "message": f"Successfully updated mode to {request.mode.value}",
             "current_state": get_full_system_state(),
