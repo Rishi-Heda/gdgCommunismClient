@@ -156,7 +156,7 @@ const Settings = () => {
                 </div>
               </div>
               <div className="text-center">
-                <h2 className="text-xl font-black italic font-mono mb-1 text-white">Hivestitch_Admin</h2>
+                <h2 className="text-xl font-black font-mono mb-1 text-white">Hivestitch_Admin</h2>
                 <p className="text-[10px] font-mono text-text-muted uppercase tracking-[0.2em] mb-4">Level 4 Architect</p>
                 <div className="flex items-center justify-center gap-2 px-3 py-1 bg-[#FAFF00]/10 border border-[#FAFF00]/20 rounded-full w-fit mx-auto">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#FAFF00] animate-pulse" />
