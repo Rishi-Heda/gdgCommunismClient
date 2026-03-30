@@ -9,6 +9,7 @@ const AppLayout = () => {
   const location = useLocation();
   const isInverted = location.pathname === '/marketplace';
   const isDashboard = location.pathname === '/dashboard';
+  const isSettings = location.pathname === '/settings';
 
   return (
     <div
@@ -22,7 +23,7 @@ const AppLayout = () => {
 
         {/* CONTENT AREA WITH FADE-IN */}
         <div className="min-h-screen flex flex-col animate-fade-in">
-          <main className="flex-1 pt-48 pb-12 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto w-full">
+          <main className={`flex-1 ${isSettings ? 'pt-28' : 'pt-48'} pb-12 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto w-full`}>
             <Outlet />
           </main>
         </div>
