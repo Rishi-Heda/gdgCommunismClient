@@ -243,9 +243,9 @@ const Marketplace = () => {
             </div>
           </div>
 
-          <div className="flex-1 bg-black/5 rounded-3xl p-6 border border-dashed border-black/20 flex flex-col items-center justify-center text-center">
-            <Gift className="w-8 h-8 mb-3 text-black/30" />
-            <p className="text-xs font-mono uppercase tracking-widest text-black/40">New Partner Rewards Coming Soon</p>
+          <div className="flex-1 bg-black/10 rounded-3xl p-6 border border-dashed border-black/30 flex flex-col items-center justify-center text-center">
+            <Gift className="w-8 h-8 mb-3 text-black/60" />
+            <p className="text-[11px] font-mono font-bold uppercase tracking-[0.1em] whitespace-nowrap text-black/70">New Partner Rewards Coming Soon</p>
           </div>
         </div>
 
