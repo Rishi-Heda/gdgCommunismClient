@@ -13,13 +13,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
-  const { cartItems, getCartTotal, clearCart } = useCart();
+  const { getCartTotal, clearCart } = useCart();
   const [step, setStep] = useState('processing'); // processing, confirming, complete
   const [logs, setLogs] = useState([]);
   const navigate = useNavigate();
   const total = getCartTotal();
 
-  const checkoutLogs = [
+  const checkoutLogs = React.useMemo(() => [
     "Initializing secure transaction channel...",
     "Verifying Hive identity signature...",
     "Querying decentralized ledger for HC balance...",
@@ -29,7 +29,7 @@ const Checkout = () => {
     "Finalizing resource allocation...",
     "Transaction confirmed in block #77a2...",
     "ACQUISITION SUCCESSFUL"
-  ];
+  ], [total]);
 
   useEffect(() => {
     if (step === 'processing') {
@@ -45,7 +45,7 @@ const Checkout = () => {
       }, 600);
       return () => clearInterval(interval);
     }
-  }, [step, total]);
+  }, [step, checkoutLogs]);
 
   const handleFinish = () => {
     clearCart();

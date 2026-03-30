@@ -38,13 +38,13 @@ const ScrambleLetter = ({ letter }) => {
 
       return () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
-        setDisplayLetter(letter);
       };
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      setDisplayLetter(letter);
     }
   }, [isAnimating, letter]);
+
+  const charToShow = isAnimating ? displayLetter : letter;
 
   return (
     <span
@@ -53,7 +53,7 @@ const ScrambleLetter = ({ letter }) => {
       className={`inline-block cursor-default transition-all duration-200 select-none ${isHovered || isAnimating ? 'text-accent-primary transform scale-110' : ''}`}
       style={{ display: 'inline-block' }}
     >
-      {displayLetter === ' ' ? '\u00A0' : displayLetter}
+      {charToShow === ' ' ? '\u00A0' : charToShow}
     </span>
   );
 };

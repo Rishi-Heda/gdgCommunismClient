@@ -5,13 +5,10 @@ import {
   Database,
   ShieldCheck,
   Zap,
-  ChevronRight,
   Gift,
-  ExternalLink,
   Coins,
   Plus,
-  Minus,
-  Check
+  Minus
 } from 'lucide-react';
 import ScrollingTape from '../components/marketplace/ScrollingTape';
 import { mockWealth } from '../data/mock';
