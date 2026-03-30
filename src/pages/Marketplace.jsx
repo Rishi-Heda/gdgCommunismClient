@@ -106,7 +106,7 @@ const Marketplace = () => {
         <ScrollingTape text="THE HIVE MARKET" speed={40} tilt={-2} />
 
         <div className="flex flex-col md:flex-row justify-center items-center gap-8 px-8 mt-16 text-center">
-          <p className="text-text-secondary font-medium max-w-xl text-sm leading-relaxed">
+          <p className="text-text-secondary font-black max-w-none text-lg uppercase tracking-wider leading-relaxed whitespace-nowrap">
             Exchange your earned Hive Coins for Mind Credits or exclusive partner assets and hardware access.
           </p>
         </div>
