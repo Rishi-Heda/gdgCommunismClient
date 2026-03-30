@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Zap, Shield, Wallet } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Wallet, Hexagon, Store } from 'lucide-react';
 import ScrambleText from '../components/common/ScrambleText';
 import FloatingHeader from '../components/layout/FloatingHeader';
 
@@ -12,27 +12,32 @@ const LandingPage = () => {
   ];
 
   const features = [
-    { 
-      title: 'Zero Setup', 
-      desc: 'Connect your resources in minutes with our lightweight client.', 
-      icon: Zap 
+    {
+      title: 'Zero Setup',
+      desc: 'Connect your resources in minutes with our lightweight client.',
+      icon: Zap
     },
-    { 
-      title: 'Fault Tolerant', 
-      desc: 'Jobs are automatically redistributed if nodes go offline.', 
-      icon: Shield 
+    {
+      title: 'Fault Tolerant',
+      desc: 'Jobs are automatically redistributed if nodes go offline.',
+      icon: Shield
     },
-    { 
-      title: 'Credit Based', 
-      desc: 'Transparent pricing with direct node operator payouts.', 
-      icon: Wallet 
+    {
+      title: 'Credit Based',
+      desc: 'Transparent pricing with direct node operator payouts.',
+      icon: Wallet
+    },
+    {
+      title: 'Exchange & Rewards',
+      desc: 'Transform your Hive Coins into Mind Credits or exclusive partner rewards.',
+      icon: Store
     },
   ];
 
   return (
     <div className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in relative">
       <div className="noise" />
-      
+
       {/* Premium Navigation Header */}
       <FloatingHeader />
 
@@ -40,21 +45,28 @@ const LandingPage = () => {
       <section className="relative pt-48 pb-20 px-6 md:px-12 flex flex-col items-center text-center">
         {/* Yellow glow behind hero */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-primary/5 blur-[120px] rounded-full -z-10" />
-        
+
+        {/* branding block */}
+        <div className="flex items-center gap-4 mb-14 px-8 py-4 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-[0_0_50px_rgba(250,255,0,0.05)] group hover:border-accent-primary/50 transition-all duration-700">
+          <Hexagon className="w-7 h-7 text-accent-primary group-hover:rotate-180 transition-transform duration-1000" />
+          <span className="text-[22px] font-black tracking-[0.6em] uppercase text-white/90 ml-2">
+            <ScrambleText text="HiveMind" />
+          </span>
+        </div>
         <div className="text-[12px] font-mono uppercase tracking-[0.3em] text-accent-primary mb-6 animate-fade-in">
           <ScrambleText text="DECENTRALIZED COMPUTE NETWORK" />
         </div>
-        
+
         <h1 className="text-5xl md:text-8xl font-black max-w-5xl leading-[0.95] mb-8 tracking-tighter">
           <ScrambleText text="Your idle GPU." /><br />
           <span className="text-text-secondary opacity-50"><ScrambleText text="Someone's" /></span> <span className="text-accent-primary"><ScrambleText text="breakthrough." /></span>
         </h1>
-        
+
         <p className="text-text-secondary text-lg md:text-xl max-w-2xl mb-12">
-          HiveMind connects idle CPU and GPU resources with researchers and developers 
-          who need compute — without the proprietary cloud bill.
+          HiveMind connects idle CPU and GPU resources with researchers and developers
+          who need compute, without the proprietary cloud bill.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row gap-4 mb-20 w-full justify-center">
           <Link to="/submit" className="w-full sm:w-auto">
             <button className="w-full sm:w-auto bg-accent-primary text-black px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
@@ -87,7 +99,7 @@ const LandingPage = () => {
 
       {/* Features */}
       <section className="px-6 md:px-12 py-32 border-t border-[#222] bg-background-base/50">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature) => (
             <div key={feature.title} className="group p-8 rounded-3xl bg-surface-card border border-[#222] hover:border-accent-primary transition-all duration-500 hover:shadow-[0_0_40px_rgba(250,255,0,0.03)]">
               <div className="w-12 h-12 rounded-2xl bg-accent-glow flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
