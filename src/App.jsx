@@ -11,6 +11,7 @@ import Credits from './pages/Credits';
 import Marketplace from './pages/Marketplace';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Settings from './pages/Settings';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -32,7 +33,7 @@ function App() {
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/settings" element={<div className="p-8 text-center text-text-muted">Settings page coming soon.</div>} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
   
           {/* Fallback */}
