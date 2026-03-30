@@ -73,7 +73,7 @@ const Credits = () => {
 
                <div className="md:border-l md:border-white/10 md:pl-12">
                  <div className="flex items-center gap-2 mb-3 text-text-muted font-mono tracking-widest text-[10px] uppercase">
-                   <Wallet className="w-3 h-3 text-text-secondary" />
+                   <Wallet className="w-3 h-3 text-accent-primary" />
                    Earning Rewards (HC)
                  </div>
                  <div className="flex items-baseline gap-3">
