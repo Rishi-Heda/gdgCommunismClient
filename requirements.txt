@@ -22,3 +22,4 @@ httpx>=0.27.0
 # Required for saving large AI datasets to the hard drive asynchronously
 # without freezing the background engine
 aiofiles>=23.2.1
+PyYAML>=6.0.1
