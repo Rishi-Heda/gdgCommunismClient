@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent-primary: #FAFF00;
+  --color-accent-glow: rgba(250, 255, 0, 0.12);
+  --color-background-base: #080808;
+  --color-surface-card: #111111;
+  --color-surface-elevated: #181818;
+  --color-border-default: #222222;
+  --color-text-primary: #F2F2F2;
+  --color-text-secondary: #888888;
+  --color-text-muted: #444444;
+  --color-status-green: #39FF6A;
+  --color-status-red: #FF4444;
+  --color-status-yellow: #FAFF00;
+
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+}
+
+[data-theme="inverted"] {
+  --color-background-base: #FAFF00;
+  --color-text-primary: #000000;
+  --color-text-secondary: #111111;
+  --color-text-muted: #222222;
+  --color-accent-primary: #000000;
+  --color-accent-glow: rgba(0, 0, 0, 0.08);
+  --color-surface-card: rgba(0, 0, 0, 0.04);
+  --color-surface-elevated: rgba(0, 0, 0, 0.08);
+  --color-border-default: rgba(0, 0, 0, 0.15);
+}
+
+.inverted-dark-container {
+  background-color: #000 !important;
+  color: #FAFF00 !important;
+}
+
+.inverted-dark-container .text-text-muted,
+.inverted-dark-container .text-text-secondary {
+  color: rgba(250, 255, 0, 0.6) !important;
+}
+
+[data-theme="inverted"] .header-nav-link,
+[data-theme="inverted"] .header-nav-link svg {
+  color: rgba(250, 255, 0, 0.6) !important;
+}
+
+[data-theme="inverted"] .header-nav-link:hover,
+[data-theme="inverted"] .header-nav-link:hover svg {
+  color: #FAFF00 !important;
+  background-color: rgba(250, 255, 0, 0.1) !important;
+}
+
+[data-theme="inverted"] .header-nav-link.active,
+[data-theme="inverted"] .header-nav-link[aria-current="page"] svg {
+  background-color: #FAFF00 !important;
+  color: #000 !important;
+}
+
+[data-theme="inverted"] .header-logo-icon {
+  color: #FAFF00 !important;
+}
+
+@layer base {
+  :root {
+    background-color: var(--color-background-base);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  button,
+  input,
+  select,
+  textarea {
+    font-family: var(--font-sans);
+  }
+}
+
+@utility animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-primary);
+}
+
+.dot-grid {
+  background-image: radial-gradient(var(--color-border-default) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:border-accent-primary hover:shadow-[0_0_20px_rgba(250,255,0,0.05)];
+}
+
+/* Marquee Animations for ScrollingTape component */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right var(--duration, 40s) linear infinite;
+}
+
+@utility animate-spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hide number input arrows/spinners */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
