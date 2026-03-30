@@ -48,7 +48,7 @@ const LandingPage = () => {
 
         {/* branding block */}
         <div className="flex items-center gap-4 mb-10 px-8 py-4 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-[0_0_50px_rgba(250,255,0,0.05)] group hover:border-accent-primary/50 transition-all duration-700">
-          <Hexagon className="w-7 h-7 text-accent-primary group-hover:rotate-180 transition-transform duration-1000" />
+          <Hexagon className="w-7 h-7 text-accent-primary animate-spin-slow" />
           <span className="text-[22px] font-black tracking-[0.6em] uppercase text-white/90 ml-2">
             <ScrambleText text="HiveMind" />
           </span>
