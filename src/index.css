@@ -128,7 +128,7 @@
 }
 
 .card-hover {
-  @apply transition-all duration-300 hover:border-accent-primary hover:shadow-[0_0_20px_rgba(250, 255, 0, 0.05)];
+  @apply transition-all duration-300 hover:border-accent-primary hover:shadow-[0_0_20px_rgba(250,255,0,0.05)];
 }
 
 /* Marquee Animations for ScrollingTape component */
