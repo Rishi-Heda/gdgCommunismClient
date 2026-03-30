@@ -14,6 +14,7 @@ WORKSPACE_DIR = Path(os.getcwd()) / "workspace"
 INPUTS_DIR = WORKSPACE_DIR / "inputs"
 OUTPUTS_DIR = WORKSPACE_DIR / "outputs"
 ARCHIVES_DIR = WORKSPACE_DIR / "archives" # Stores the zipped files before upload
+ARTIFACTS_DIR = WORKSPACE_DIR / "artifacts" # Durable local artifact history
 
 def setup_workspace():
     """
@@ -23,6 +24,7 @@ def setup_workspace():
     INPUTS_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
     ARCHIVES_DIR.mkdir(parents=True, exist_ok=True)
+    ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 def clean_workspace():
     """
@@ -110,3 +112,37 @@ def compress_outputs(task_id: str) -> Path:
     except Exception as e:
         print(f"Failed to compress outputs: {e}")
         raise e
+
+
+def archive_execution_bundle(task_id: str, source_zip_path: Path | None = None) -> Path:
+    """
+    Create a durable archive bundle before workspace cleanup.
+    Includes:
+    - original uploaded/downloaded zip (if available)
+    - extracted inputs
+    - outputs (logs/results/checkpoints)
+    """
+    setup_workspace()
+    archive_path = ARCHIVES_DIR / f"execution_bundle_{task_id}.zip"
+    artifact_copy_path = ARTIFACTS_DIR / f"execution_bundle_{task_id}.zip"
+    if archive_path.exists():
+        archive_path.unlink(missing_ok=True)
+    if artifact_copy_path.exists():
+        artifact_copy_path.unlink(missing_ok=True)
+
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        if source_zip_path is not None and source_zip_path.exists():
+            archive.write(source_zip_path, arcname="original/payload.zip")
+
+        if INPUTS_DIR.exists():
+            for item in INPUTS_DIR.rglob("*"):
+                if item.is_file():
+                    archive.write(item, arcname=str(Path("inputs") / item.relative_to(INPUTS_DIR)))
+
+        if OUTPUTS_DIR.exists():
+            for item in OUTPUTS_DIR.rglob("*"):
+                if item.is_file():
+                    archive.write(item, arcname=str(Path("outputs") / item.relative_to(OUTPUTS_DIR)))
+
+    shutil.copy2(archive_path, artifact_copy_path)
+    return artifact_copy_path

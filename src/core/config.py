@@ -15,13 +15,18 @@ class Settings(BaseSettings):
     APP_NAME: str = "Decentralized Compute Node"
     VERSION: str = "1.0.0"
 
-    MASTER_SERVER_URL: str = os.getenv("MASTER_SERVER_URL", "http://localhost:8080")
+    MASTER_SERVER_URL: str = os.getenv("MASTER_SERVER_URL", "http://localhost:8000")
+    LOCAL_DASHBOARD_HOST: str = os.getenv("LOCAL_DASHBOARD_HOST", "127.0.0.1")
+    LOCAL_DASHBOARD_PORT: int = int(os.getenv("LOCAL_DASHBOARD_PORT", "8001"))
     NODE_UUID: str = os.getenv("NODE_UUID", "node-demo-001")
     API_KEY: str = os.getenv("API_KEY", "")
+    JOB_CLIENT_API_KEY: str = os.getenv("JOB_CLIENT_API_KEY", "")
+    NODE_REGISTRATION_KEY: str = os.getenv("NODE_REGISTRATION_KEY", "")
     NODE_TOKEN: str = os.getenv("NODE_TOKEN", "")
     TCP_TRANSPORT_TIMEOUT_SECONDS: int = int(os.getenv("TCP_TRANSPORT_TIMEOUT_SECONDS", "60"))
+    DEFAULT_DOCKER_IMAGE: str = os.getenv("DEFAULT_DOCKER_IMAGE", "python:3.11-slim")
 
-    IDLE_TIME_REQUIRED_SECONDS: int = 300
+    IDLE_TIME_REQUIRED_SECONDS: int = 20
     MAX_IDLE_CPU_PERCENT: float = 30.0
 
     MAX_CPU_CORES_TO_DONATE: float = _safe_cpu_limit
