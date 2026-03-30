@@ -60,7 +60,7 @@ const Dashboard = () => {
       {/* SECTION 1 — PAGE HEADER */}
       <div className="flex flex-row items-center justify-between mb-6 pt-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight"><ScrambleText text="Dashboard" /></h1>
           <p className="text-[10px] font-mono uppercase tracking-widest text-text-muted mt-0.5">SYSTEM OVERVIEW</p>
         </div>
 
@@ -189,59 +189,59 @@ const Dashboard = () => {
           <section className="bg-surface-card border border-[#222] rounded-2xl overflow-hidden h-full">
             <div className="p-6 border-b border-[#222] flex justify-between items-center">
               <div>
-                <h2 className="text-lg font-bold">Current Task Queue</h2>
+                <h2 className="text-lg font-bold"><ScrambleText text="Current Task Queue" /></h2>
                 <p className="text-xs text-text-muted mt-1 font-mono uppercase tracking-[0.1em]">ACTIVE SYSTEM PROCESSES</p>
               </div>
               <Link to="/jobs" className="text-xs font-mono text-accent-primary hover:underline flex items-center gap-1">
                 View All Jobs <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-hidden">
+              <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="bg-[#111]">
-                    <th className="px-6 py-4 text-[10px] font-mono tracking-widest text-[#555] uppercase">Task Name</th>
-                    <th className="px-6 py-4 text-[10px] font-mono tracking-widest text-[#555] uppercase">Submitter</th>
-                    <th className="px-6 py-4 text-[10px] font-mono tracking-widest text-[#555] uppercase">Node</th>
-                    <th className="px-6 py-4 text-[10px] font-mono tracking-widest text-[#555] uppercase">Status</th>
-                    <th className="px-6 py-4 text-[10px] font-mono tracking-widest text-[#555] uppercase">Checkpoint</th>
-                    <th className="px-6 py-4 text-[10px] font-mono tracking-widest text-[#555] uppercase">Progress</th>
+                    <th className="w-[28%] px-4 py-3 text-[9px] font-mono tracking-[0.12em] text-[#555] uppercase whitespace-nowrap">Task Name</th>
+                    <th className="w-[16%] px-4 py-3 text-[9px] font-mono tracking-[0.12em] text-[#555] uppercase whitespace-nowrap">Submitter</th>
+                    <th className="w-[12%] px-4 py-3 text-[9px] font-mono tracking-[0.12em] text-[#555] uppercase whitespace-nowrap">Node</th>
+                    <th className="w-[14%] px-4 py-3 text-[9px] font-mono tracking-[0.12em] text-[#555] uppercase whitespace-nowrap">Status</th>
+                    <th className="w-[14%] px-4 py-3 text-[9px] font-mono tracking-[0.12em] text-[#555] uppercase whitespace-nowrap">Checkpoint</th>
+                    <th className="w-[16%] px-4 py-3 text-[9px] font-mono tracking-[0.12em] text-[#555] uppercase whitespace-nowrap">Progress</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#222]">
                   {mockJobs.map((job) => (
                     <tr key={job.id} className="hover:bg-[#111] transition-colors group cursor-pointer">
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors">
-                          <ScrambleText text={job.name} />
+                      <td className="px-4 py-3">
+                        <div className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors truncate">
+                          {job.name}
                         </div>
-                        <div className="text-[10px] font-mono text-text-muted mt-0.5 uppercase tracking-tighter">
-                          ID: <ScrambleText text={job.id} />
+                        <div className="text-[9px] font-mono text-text-muted mt-0.5 uppercase tracking-tight truncate">
+                          ID: {job.id}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-xs font-mono text-text-secondary">@{job.submitter}</td>
-                      <td className="px-6 py-4 text-[10px] font-mono text-text-muted uppercase">
-                        <ScrambleText text={job.node || 'node-77a2'} />
+                      <td className="px-4 py-3 text-[11px] font-mono text-text-secondary truncate">@{job.submitter}</td>
+                      <td className="px-4 py-3 text-[9px] font-mono text-text-muted uppercase truncate">
+                        {job.node || 'node-77a2'}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${getStatusColor(job.status)}`}>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono border whitespace-nowrap ${getStatusColor(job.status)}`}>
                           {job.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${getCheckpointStyle(job.status).color}`}>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono border whitespace-nowrap ${getCheckpointStyle(job.status).color}`}>
                           {getCheckpointStyle(job.status).label}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1 min-w-[80px] bg-surface-elevated h-1 rounded-full overflow-hidden">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 min-w-[60px] bg-surface-elevated h-1 rounded-full overflow-hidden">
                             <div
                               className="bg-accent-primary h-full transition-all duration-1000"
                               style={{ width: `${job.progress}%` }}
                             />
                           </div>
-                          <span className="text-[10px] font-mono text-text-muted w-8">{job.progress}%</span>
+                          <span className="text-[9px] font-mono text-text-muted w-7 text-right">{job.progress}%</span>
                         </div>
                       </td>
                     </tr>
@@ -256,7 +256,7 @@ const Dashboard = () => {
         <div className="lg:col-span-1">
           <section className="bg-surface-card border border-[#222] rounded-2xl flex flex-col h-full">
             <div className="p-6 border-b border-[#222]">
-              <h2 className="text-lg font-bold">Credit Activity</h2>
+              <h2 className="text-lg font-bold"><ScrambleText text="Credit Activity" /></h2>
               <p className="text-xs text-text-muted mt-1 font-mono uppercase tracking-[0.1em]">YOUR BALANCE & TRANSACTIONS</p>
             </div>
 

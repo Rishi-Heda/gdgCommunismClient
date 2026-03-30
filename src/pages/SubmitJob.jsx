@@ -17,6 +17,7 @@ const SubmitJob = () => {
   const [jobType, setJobType] = useState('AI Training');
   const [gpuRequired, setGpuRequired] = useState(true);
   const [priority, setPriority] = useState('Standard');
+  const [minRam, setMinRam] = useState(32);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = React.useRef(null);
@@ -120,10 +121,18 @@ const SubmitJob = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <label className="text-text-secondary flex items-center gap-2 uppercase font-mono tracking-tighter">
-                    <Layers className="w-4 h-4" /> Min RAM: 32 GB
+                    <Layers className="w-4 h-4" /> Min RAM: {minRam} GB
                   </label>
                 </div>
-                <input type="range" min="8" max="256" step="8" defaultValue="32" className="w-full h-1.5 bg-surface-elevated rounded-lg appearance-none cursor-pointer accent-accent-primary" />
+                <input
+                  type="range"
+                  min="8"
+                  max="128"
+                  step="8"
+                  value={minRam}
+                  onChange={(e) => setMinRam(Number(e.target.value))}
+                  className="w-full h-1.5 bg-surface-elevated rounded-lg appearance-none cursor-pointer accent-accent-primary"
+                />
               </div>
             </div>
 
