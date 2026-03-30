@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockJobs, mockNodes, mockActivity, mockCredits } from '../data/mock';
+import { mockJobs, mockNodes, mockActivity, mockWealth } from '../data/mock';
 import { Link } from 'react-router-dom';
 import ScrambleText from '../components/common/ScrambleText';
 import {
@@ -11,7 +11,9 @@ import {
   LayoutGrid,
   Plus,
   Globe,
-  CreditCard
+  CreditCard,
+  Hexagon,
+  Clock
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -258,7 +260,7 @@ const Dashboard = () => {
 
             <div className="p-6 pb-4 border-b border-[#222]">
               <div className="text-4xl font-mono font-bold text-accent-primary">
-                <ScrambleText text={mockCredits.balance.toLocaleString()} />
+                <ScrambleText text={mockWealth.mindCredits.toLocaleString()} />
               </div>
               <p className="text-[10px] font-mono text-text-muted uppercase mt-1 tracking-widest">CREDITS AVAILABLE</p>
             </div>

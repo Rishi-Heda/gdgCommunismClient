@@ -1,16 +1,13 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import FloatingHeader from './FloatingHeader';
-import { useLocation, Link } from 'react-router-dom';
 import { Plus, Globe, CreditCard } from 'lucide-react';
 
 const AppLayout = () => {
   const location = useLocation();
   const isInverted = location.pathname === '/marketplace';
-
-  const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
 
   return (
@@ -73,7 +70,8 @@ const AppLayout = () => {
           </nav>
         )}
       </div>
-      );
+    </div>
+  );
 };
 
-      export default AppLayout;
+export default AppLayout;
