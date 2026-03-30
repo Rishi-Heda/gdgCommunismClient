@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Hexagon, ArrowRight, Zap, Shield, Wallet } from 'lucide-react';
+import ScrambleText from '../components/common/ScrambleText';
 
 const LandingPage = () => {
   const stats = [
@@ -28,14 +29,16 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in">
+    <div className="min-h-screen bg-background-base text-text-primary overflow-x-hidden animate-fade-in relative">
       <div className="noise" />
       
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 h-20 border-b border-[#222]/50 bg-background-base/80 backdrop-blur-xl z-50 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Hexagon className="w-8 h-8 text-accent-primary" />
-          <span className="text-xl font-mono font-bold tracking-tight">HiveMind</span>
+          <span className="text-xl font-mono font-bold tracking-tight">
+            <ScrambleText text="HiveMind" />
+          </span>
         </div>
         
         <div className="hidden md:flex items-center gap-8">
@@ -52,17 +55,17 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-40 pb-20 px-6 md:px-12 flex flex-col items-center text-center">
+      <section className="relative pt-48 pb-20 px-6 md:px-12 flex flex-col items-center text-center">
         {/* Yellow glow behind hero */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-primary/5 blur-[120px] rounded-full -z-10" />
         
         <div className="text-[12px] font-mono uppercase tracking-[0.3em] text-accent-primary mb-6 animate-fade-in">
-          DECENTRALIZED COMPUTE NETWORK
+          <ScrambleText text="DECENTRALIZED COMPUTE NETWORK" />
         </div>
         
-        <h1 className="text-5xl md:text-7xl font-bold max-w-4xl leading-[1.1] mb-8">
-          Your idle GPU. <br />
-          Someone's <span className="text-accent-primary">breakthrough.</span>
+        <h1 className="text-5xl md:text-8xl font-black max-w-5xl leading-[0.95] mb-8 tracking-tighter">
+          <ScrambleText text="Your idle GPU." /><br />
+          <span className="text-text-secondary opacity-50"><ScrambleText text="Someone's" /></span> <span className="text-accent-primary"><ScrambleText text="breakthrough." /></span>
         </h1>
         
         <p className="text-text-secondary text-lg md:text-xl max-w-2xl mb-12">
@@ -88,9 +91,13 @@ const LandingPage = () => {
             <div key={stat.label} className="flex flex-col items-center">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
-                <span className="text-3xl md:text-4xl font-mono font-bold text-accent-primary">{stat.value}</span>
+                <span className="text-3xl md:text-4xl font-mono font-bold text-accent-primary">
+                  <ScrambleText text={stat.value} />
+                </span>
               </div>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-[#555]">{stat.label}</span>
+              <span className="text-[10px] uppercase font-mono tracking-widest text-[#555]">
+                <ScrambleText text={stat.label} />
+              </span>
             </div>
           ))}
         </div>
@@ -104,7 +111,9 @@ const LandingPage = () => {
               <div className="w-12 h-12 rounded-2xl bg-accent-glow flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
                 <feature.icon className="w-6 h-6 text-accent-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+              <h3 className="text-xl font-bold mb-3">
+                <ScrambleText text={feature.title} />
+              </h3>
               <p className="text-text-secondary leading-relaxed">
                 {feature.desc}
               </p>
