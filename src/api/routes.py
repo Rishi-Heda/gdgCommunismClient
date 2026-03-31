@@ -217,3 +217,24 @@ async def get_activity_feed():
         {"id": 1, "text": "Network online and database connected.", "time": "Just now", "color": "green"},
         {"id": 2, "text": f"Node {config.NODE_UUID} registered successfully.", "time": "2m ago", "color": "blue"},
     ]
+
+
+@router.get("/network/stats")
+async def get_network_stats():
+    try:
+        nodes_coll = await get_node_insights_collection()
+        jobs_coll = await get_jobs_collection()
+
+        total_nodes = await nodes_coll.count_documents({})
+        active_jobs = await jobs_coll.count_documents({"status": "RUNNING"})
+
+        # Placeholder TFLOPS calculation: Average 75 GFLOPS per node
+        total_tflops = round((total_nodes * 0.075), 1)
+
+        return {
+            "active_nodes": total_nodes,
+            "jobs_running": active_jobs,
+            "network_total_tflops": f"{total_tflops} TFLOPS"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
