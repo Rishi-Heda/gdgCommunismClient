@@ -140,7 +140,7 @@ const Marketplace = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-[0.2em] mb-4 text-[#FAFF00]/70">You Give (Hive Coins)</label>
+                  <label className="block text-[10px] font-mono uppercase tracking-[0.2em] mb-4 text-[#FAFF00]">You Give (Hive Coins)</label>
                   <div className="relative">
                     <input
                       type="number"
@@ -156,7 +156,7 @@ const Marketplace = () => {
                     />
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-end">
                       <span className="text-xs font-mono font-bold text-[#FAFF00]">HC</span>
-                      <span className="text-[10px] text-white/50 underline cursor-pointer hover:text-white transition-colors" onClick={() => {
+                      <span className="text-[10px] text-white/80 underline cursor-pointer hover:text-white transition-colors" onClick={() => {
                         setExchangeAmount(wealth.hiveCoins);
                         if (exchangeNotice) {
                           setExchangeNotice(null);
@@ -173,7 +173,7 @@ const Marketplace = () => {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-[0.2em] mb-4 text-[#FAFF00]/70">You Receive (Mind Credits)</label>
+                  <label className="block text-[10px] font-mono uppercase tracking-[0.2em] mb-4 text-[#FAFF00]">You Receive (Mind Credits)</label>
                   <div className="bg-accent-primary/5 border-2 border-dashed border-accent-primary/20 rounded-3xl px-8 py-6 flex justify-between items-center">
                     <span className="text-4xl font-black text-white">{mcReceive.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                     <span className="text-sm font-mono font-bold text-white uppercase tracking-wider">MC</span>

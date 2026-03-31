@@ -70,7 +70,7 @@ const NodeGauge = ({ label, value, specs, color = "#FAFF00" }) => {
           </div>
         </div>
       </div>
-      <div className="text-[9px] font-mono text-text-muted uppercase tracking-widest mt-2 opacity-60 group-hover:opacity-100 transition-opacity">
+      <div className="text-[9px] font-mono text-text-muted uppercase tracking-widest mt-2 group-hover:opacity-100 transition-opacity">
         {specs}
       </div>
     </div>
@@ -238,7 +238,7 @@ const Dashboard = () => {
 
         <div className="flex items-center justify-center lg:justify-end gap-10">
           <div className="flex flex-col items-end">
-            <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1 opacity-40">NETWORK_LATENCY</div>
+            <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1 opacity-90">NETWORK_LATENCY</div>
             <div className="flex items-center gap-2">
               <div className="flex gap-0.5 h-3 items-end">
                 <div className="w-0.5 h-full bg-status-green" />
@@ -253,7 +253,7 @@ const Dashboard = () => {
           <div className="h-8 w-[1px] bg-white/10" />
 
           <div className="flex flex-col items-end min-w-[120px]">
-            <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1 opacity-40">UTC_TIMESTAMP</div>
+            <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1 opacity-90">UTC_TIMESTAMP</div>
             <div className="text-xl font-mono font-black text-accent-primary tracking-tighter">
               {time.toLocaleTimeString('en-US', { hour12: false })}
             </div>
@@ -361,11 +361,11 @@ const Dashboard = () => {
               <table className="w-full text-left border-collapse table-fixed min-w-[700px]">
                 <thead>
                   <tr className="bg-black/40">
-                    <th className="w-[30%] px-6 py-4 text-[9px] font-mono tracking-[0.2em] text-[#555] uppercase whitespace-nowrap">Process Identifier</th>
-                    <th className="w-[15%] px-4 py-4 text-[9px] font-mono tracking-[0.2em] text-[#555] uppercase whitespace-nowrap">Operator</th>
-                    <th className="w-[12%] px-4 py-4 text-[9px] font-mono tracking-[0.2em] text-[#555] uppercase whitespace-nowrap">Node ID</th>
-                    <th className="w-[15%] px-4 py-4 text-[9px] font-mono tracking-[0.2em] text-[#555] uppercase whitespace-nowrap">State</th>
-                    <th className="w-[28%] px-6 py-4 text-[9px] font-mono tracking-[0.2em] text-[#555] uppercase whitespace-nowrap">Network Health / Progress</th>
+                    <th className="w-[30%] px-6 py-4 text-[9px] font-mono tracking-[0.2em] text-text-secondary uppercase whitespace-nowrap">Process Identifier</th>
+                    <th className="w-[15%] px-4 py-4 text-[9px] font-mono tracking-[0.2em] text-text-secondary uppercase whitespace-nowrap">Operator</th>
+                    <th className="w-[12%] px-4 py-4 text-[9px] font-mono tracking-[0.2em] text-text-secondary uppercase whitespace-nowrap">Node ID</th>
+                    <th className="w-[15%] px-4 py-4 text-[9px] font-mono tracking-[0.2em] text-text-secondary uppercase whitespace-nowrap">State</th>
+                    <th className="w-[28%] px-6 py-4 text-[9px] font-mono tracking-[0.2em] text-text-secondary uppercase whitespace-nowrap">Network Health / Progress</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -392,7 +392,7 @@ const Dashboard = () => {
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-4">
                           <SegmentedProgress percent={job.progress} />
-                          <span className="text-[10px] font-mono font-black text-white/50 group-hover:text-accent-primary transition-colors w-10 text-right">{job.progress}%</span>
+                          <span className="text-[10px] font-mono font-black text-white/70 group-hover:text-accent-primary transition-colors w-10 text-right">{job.progress}%</span>
                         </div>
                       </td>
                     </tr>
@@ -442,7 +442,7 @@ const Dashboard = () => {
             </div>
 
             <div className="p-6 border-t border-white/5 bg-black/40">
-              <Link to="/credits" className="w-full py-4 block text-center text-[10px] font-mono font-bold text-[#555] uppercase tracking-[0.3em] hover:text-accent-primary hover:bg-accent-primary/5 transition-all border border-transparent hover:border-accent-primary/20 rounded-sm">
+              <Link to="/credits" className="w-full py-4 block text-center text-[10px] font-mono font-bold text-text-secondary uppercase tracking-[0.3em] hover:text-accent-primary hover:bg-accent-primary/5 transition-all border border-transparent hover:border-accent-primary/20 rounded-sm">
                 ACCESS SYSTEM ARCHIVE →
               </Link>
             </div>

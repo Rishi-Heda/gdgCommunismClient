@@ -11,7 +11,7 @@ const Credits = () => {
   const usageStats = [
     { label: 'AI Inference', percentage: 62, icon: Zap, color: '#FAFF00' },
     { label: 'Rendering', percentage: 24, icon: Layers, color: '#FFFFFF' },
-    { label: 'Computation', percentage: 14, icon: Target, color: '#888' },
+    { label: 'Computation', percentage: 14, icon: Target, color: '#A0A0A0' },
   ];
 
   const packages = [
@@ -72,15 +72,15 @@ const Credits = () => {
                </div>
 
                <div className="md:border-l md:border-white/10 md:pl-12">
-                 <div className="flex items-center gap-2 mb-3 text-text-muted font-mono tracking-widest text-[10px] uppercase">
+                 <div className="flex items-center gap-2 mb-3 text-text-secondary font-mono tracking-widest text-[10px] uppercase">
                    <Wallet className="w-3 h-3 text-accent-primary" />
                    Earning Rewards (HC)
                  </div>
                  <div className="flex items-baseline gap-3">
-                   <h1 className="text-5xl md:text-6xl font-black tracking-tighter opacity-80">
+                   <h1 className="text-5xl md:text-6xl font-black tracking-tighter">
                      <ScrambleText text={hcBalance} />
                    </h1>
-                   <span className="text-xl font-mono text-text-muted font-bold">HC</span>
+                   <span className="text-xl font-mono text-text-secondary font-bold">HC</span>
                  </div>
                </div>
             </div>
@@ -136,7 +136,7 @@ const Credits = () => {
                 <TrendingUp className="w-5 h-5 text-accent-primary" />
                 <ScrambleText text="Usage Insights" />
               </h2>
-              <span className="text-[10px] font-mono tracking-widest text-text-muted uppercase">Last 30 Days</span>
+              <span className="text-[10px] font-mono tracking-widest text-text-secondary uppercase">Last 30 Days</span>
             </div>
 
             <div className="flex flex-col gap-6">
@@ -180,18 +180,18 @@ const Credits = () => {
                    </svg>
                    <div className="absolute flex flex-col items-center">
                       <span className="text-4xl font-black tracking-tighter">94%</span>
-                      <span className="text-[10px] font-mono text-text-muted uppercase tracking-widest mt-1">Optimal</span>
+                      <span className="text-[10px] font-mono text-text-secondary uppercase tracking-widest mt-1">Optimal</span>
                    </div>
                 </div>
              </div>
 
              <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl bg-background-base border border-[#222]">
-                   <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Cost / Epoch</div>
+                   <div className="text-[10px] font-mono text-text-secondary uppercase tracking-widest mb-1">Cost / Epoch</div>
                    <div className="text-lg font-bold">0.42 HC</div>
                 </div>
                 <div className="p-4 rounded-2xl bg-background-base border border-[#222]">
-                   <div className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Peak Utilization</div>
+                   <div className="text-[10px] font-mono text-text-secondary uppercase tracking-widest mb-1">Peak Utilization</div>
                    <div className="text-lg font-bold">98.2%</div>
                 </div>
              </div>
@@ -217,7 +217,7 @@ const Credits = () => {
                   </div>
                 )}
                 
-                <span className="text-text-muted text-[10px] font-mono uppercase tracking-[0.2em] mb-4">{pkg.name}</span>
+                <span className="text-text-secondary text-[10px] font-mono uppercase tracking-[0.2em] mb-4">{pkg.name}</span>
                 
                 <div className="flex items-baseline gap-2 mb-2">
                   <span className="text-4xl font-black tracking-tighter">
@@ -253,7 +253,7 @@ const Credits = () => {
            </h2>
 
            <div className="flex flex-col font-inter">
-              <div className="grid grid-cols-4 gap-4 px-4 pb-4 border-b border-[#222] text-[10px] font-mono tracking-widest text-text-muted uppercase">
+              <div className="grid grid-cols-4 gap-4 px-4 pb-4 border-b border-[#222] text-[10px] font-mono tracking-widest text-text-secondary uppercase">
                  <div>Date</div>
                  <div>Description</div>
                  <div>Amount</div>
