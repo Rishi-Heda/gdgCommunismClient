@@ -1,6 +1,8 @@
 import asyncio
 from enum import Enum
 from typing import Optional, Dict, Any
+from src.core.config import config
+
 
 # ==========================================
 # 1. State Definitions
@@ -75,6 +77,7 @@ class NodeState:
     def get_full_state(self) -> Dict[str, Any]:
         """Returns a snapshot of the current state (useful for the local UI dashboard)."""
         return {
+            "node_id": config.NODE_UUID,
             "app_mode": self._mode.value,
             "engine_status": self._status.value,
             "active_task_id": self._active_task_id

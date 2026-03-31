@@ -87,6 +87,25 @@ const Dashboard = () => {
   const [nodes, setNodes] = useState([]);
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [localNodeId, setLocalNodeId] = useState(null);
+  const [localNodeData, setLocalNodeData] = useState(null);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch('http://localhost:8001/api/status');
+        if (res.ok) {
+          const status = await res.json();
+          setLocalNodeId(status.node_id);
+          setIsContributing(status.app_mode === 'donate_compute');
+        }
+      } catch (error) {
+        console.error('Error fetching system status:', error);
+      }
+    };
+    fetchStatus();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,13 +118,22 @@ const Dashboard = () => {
 
         if (jobsRes.ok) setJobs(await jobsRes.json());
         
+        let allNodes = [];
         if (nodesRes.ok) {
           const nodesData = await nodesRes.json();
-          // API returns { nodes: [...] } based on previous context
-          setNodes(nodesData.nodes || nodesData || []);
+          allNodes = nodesData.nodes || nodesData || [];
+          setNodes(allNodes);
         }
         
         if (activityRes.ok) setActivity(await activityRes.json());
+
+        // Update local node data from the network list
+        if (localNodeId) {
+          const me = allNodes.find(n => n.id === localNodeId);
+          if (me) {
+            setLocalNodeData(me);
+          }
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -116,7 +144,7 @@ const Dashboard = () => {
     fetchData();
     const interval = setInterval(fetchData, 10000); // Poll every 10s
     return () => clearInterval(interval);
-  }, []);
+  }, [localNodeId]);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -137,7 +165,7 @@ const Dashboard = () => {
       const singleSetWidth = scrollRef.current.scrollWidth / 3;
       scrollRef.current.scrollLeft = singleSetWidth;
     }
-  }, [nodes.length, jobs.length]); // Re-initialize if data changes and it affects width
+  }, [nodes.length, jobs.length]);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -289,7 +317,9 @@ const Dashboard = () => {
         <div className="flex justify-between items-center mb-10 relative z-10">
           <div>
             <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-accent-primary mb-1">NETWORK NODE TERMINAL</div>
-            <div className="text-lg font-black font-mono text-white">node-local-01</div>
+            <div className="text-lg font-black font-mono text-white">
+              {localNodeId ? <ScrambleText text={localNodeId} /> : "INITIALIZING..."}
+            </div>
           </div>
           <div className={`flex items-center gap-3 px-4 py-2 bg-black/40 border rounded-full transition-all duration-500 ${isContributing ? 'border-status-green animate-pulse shadow-[0_0_15px_rgba(57,255,106,0.2)]' : 'border-[#222]'}`}>
             <div className={`w-2 h-2 rounded-full ${isContributing ? 'bg-status-green shadow-[0_0_10px_rgb(57,255,106)]' : 'bg-text-muted'}`} />
@@ -300,17 +330,17 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
-          <NodeGauge label="CPU" value={34} specs="Intel i9-13900K" />
-          <NodeGauge label="GPU" value={67} specs="RTX 4080" />
-          <NodeGauge label="RAM" value={51} specs="32GB DDR5" />
+          <NodeGauge label="CPU" value={localNodeData?.metrics?.cpu || 0} specs={localNodeData?.specs?.cpu || "N/A"} />
+          <NodeGauge label="GPU" value={localNodeData?.metrics?.gpu || 0} specs={localNodeData?.specs?.gpu || "N/A"} />
+          <NodeGauge label="RAM" value={localNodeData?.metrics?.ram || 0} specs={localNodeData?.specs?.ram || "N/A"} />
         </div>
         
         <div className="flex justify-between items-center mt-12 pt-8 border-t border-white/5 relative z-10 font-mono text-[9px] text-text-muted uppercase tracking-widest">
           <div className="flex items-center gap-2">
             <span className="w-1 h-3 bg-accent-primary" />
-            2.4 GPU-HRS CONTRIBUTED TODAY
+            {localNodeData?.jobs_completed || 0} JOBS CONTRIBUTED BY THIS NODE
           </div>
-          <div className="text-[#FAFF00] font-bold">STABILITY: 99.98% / OPTIMAL</div>
+          <div className="text-[#FAFF00] font-bold">STABILITY: {localNodeData?.uptime || "99.9%"} / OPTIMAL</div>
         </div>
       </div>
 
@@ -431,85 +461,46 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Local Node Indicator */}
-          <div className="bg-surface-card border border-accent-primary p-5 rounded-2xl relative group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center">
-                <div className="text-xs font-mono text-accent-primary">
-                  <ScrambleText text="node-local-01" />
-                </div>
-                <span className="text-[10px] font-mono bg-accent-primary text-black px-1.5 py-0.5 rounded ml-2 uppercase font-bold">YOU</span>
-              </div>
-              <div className={`w-2 h-2 rounded-full bg-status-green animate-pulse shadow-[0_0_8px_rgb(57,255,106)]`} />
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex flex-col gap-1">
-                <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
-                  <span className="flex items-center gap-1"><Cpu className="w-2.5 h-2.5" /> Intel i9-13900K</span>
-                  <span>34%</span>
-                </div>
-                <div className="bg-white/5 h-1 rounded-full overflow-hidden">
-                  <div className="bg-text-muted h-full opacity-40" style={{ width: '34%' }} />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
-                  <span className="flex items-center gap-1"><Monitor className="w-2.5 h-2.5" /> RTX 4080</span>
-                  <span>67%</span>
-                </div>
-                <div className="bg-white/5 h-1 rounded-full overflow-hidden">
-                  <div className="bg-accent-primary h-full" style={{ width: '67%' }} />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
-                  <span className="flex items-center gap-1"><Database className="w-2.5 h-2.5" /> 32GB DDR5</span>
-                  <span>51%</span>
-                </div>
-                <div className="bg-white/5 h-1 rounded-full overflow-hidden">
-                  <div className="bg-status-yellow h-full opacity-60" style={{ width: '51%' }} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Network Nodes */}
-          {nodes.slice(0, 7).map((node) => (
-            <div key={node.id} className="bg-surface-card border border-white/5 p-5 rounded-2xl hover:border-accent-primary/30 transition-all duration-300 group">
+          {nodes.map((node) => (
+            <div key={node.id} className={`bg-surface-card border p-5 rounded-2xl relative group transition-all duration-300 ${node.id === localNodeId ? 'border-accent-primary' : 'border-white/5 hover:border-accent-primary/30'}`}>
               <div className="flex justify-between items-start mb-4">
-                <div className="text-xs font-mono text-text-primary group-hover:text-accent-primary transition-colors">
-                  {node.id}
+                <div className="flex items-center">
+                  <div className={`text-xs font-mono ${node.id === localNodeId ? 'text-accent-primary' : 'text-text-primary'}`}>
+                    <ScrambleText text={node.id} />
+                  </div>
+                  {node.id === localNodeId && (
+                    <span className="text-[10px] font-mono bg-accent-primary text-black px-1.5 py-0.5 rounded ml-2 uppercase font-bold">YOU</span>
+                  )}
                 </div>
-                <div className={`w-2 h-2 rounded-full ${node.status === 'ONLINE' ? 'bg-status-green shadow-[0_0_6px_rgb(57,255,106)]' : 'bg-status-red'} animate-pulse`} />
+                <div className={`w-2 h-2 rounded-full ${node.status === 'ONLINE' ? 'bg-status-green shadow-[0_0_8px_rgb(57,255,106)]' : 'bg-status-red'} animate-pulse`} />
               </div>
 
               <div className="space-y-3">
                 <div className="flex flex-col gap-1">
                   <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
-                    <span>CPU: {node.specs?.cpu || 'Unknown'}</span>
+                    <span className="flex items-center gap-1"><Cpu className="w-2.5 h-2.5" /> {node.specs?.cpu || 'Unknown'}</span>
                     <span>{node.metrics?.cpu || 0}%</span>
                   </div>
                   <div className="bg-white/5 h-1 rounded-full overflow-hidden">
-                    <div className="bg-white/20 h-full" style={{ width: `${node.metrics?.cpu || 0}%` }} />
+                    <div className={`${node.id === localNodeId ? 'bg-text-muted opacity-40' : 'bg-white/20'} h-full`} style={{ width: `${node.metrics?.cpu || 0}%` }} />
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
                   <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
-                    <span>GPU: {node.specs?.gpu || 'Unknown'}</span>
+                    <span className="flex items-center gap-1"><Monitor className="w-2.5 h-2.5" /> {node.specs?.gpu || 'Unknown'}</span>
                     <span>{node.metrics?.gpu || 0}%</span>
                   </div>
                   <div className="bg-white/5 h-1 rounded-full overflow-hidden">
-                    <div className="bg-accent-primary/60 h-full" style={{ width: `${node.metrics?.gpu || 0}%` }} />
+                    <div className="bg-accent-primary h-full" style={{ width: `${node.metrics?.gpu || 0}%` }} />
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
                   <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
-                    <span>RAM: {node.specs?.ram || 'Unknown'}</span>
+                    <span className="flex items-center gap-1"><Database className="w-2.5 h-2.5" /> {node.specs?.ram || 'Unknown'}</span>
                     <span>{node.metrics?.ram || 0}%</span>
                   </div>
                   <div className="bg-white/5 h-1 rounded-full overflow-hidden">
-                    <div className="bg-status-yellow/60 h-full" style={{ width: `${node.metrics?.ram || 0}%` }} />
+                    <div className="bg-status-yellow h-full opacity-60" style={{ width: `${node.metrics?.ram || 0}%` }} />
                   </div>
                 </div>
               </div>
@@ -517,7 +508,7 @@ const Dashboard = () => {
           ))}
           
           {nodes.length === 0 && !loading && (
-            <div className="col-span-1 border border-dashed border-white/10 p-5 rounded-2xl flex items-center justify-center">
+            <div className="col-span-4 border border-dashed border-white/10 p-5 py-10 rounded-2xl flex items-center justify-center">
               <span className="text-[10px] font-mono text-text-muted uppercase tracking-widest opacity-40">SEARCHING_NODES...</span>
             </div>
           )}
@@ -562,7 +553,6 @@ const Dashboard = () => {
               );
             })}
             
-            {/* Terminal Input Prompt */}
             <div className="pt-6 flex gap-3 text-[11px]">
               <span className="text-accent-primary font-bold">[ROOT@HIVEMIND]:</span>
               <span className="text-white/40">~/_</span>

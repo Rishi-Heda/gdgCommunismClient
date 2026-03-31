@@ -31,6 +31,7 @@ class ModeUpdateRequest(BaseModel):
 
 
 class SystemStatusResponse(BaseModel):
+    node_id: str
     app_mode: str
     engine_status: str
     active_task_id: Optional[str] = None
