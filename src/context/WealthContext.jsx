@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { mockWealth } from '../data/mock';
 
 const WealthContext = createContext();
@@ -18,9 +18,34 @@ export const useWealth = () => {
 };
 
 export const WealthProvider = ({ children }) => {
-  const [wealth, setWealth] = useState(initialWealth);
+  const [wealth, setWealth] = useState({
+    hiveCoins: 0,
+    mindCredits: 0,
+  });
 
   const exchangeRate = mockWealth.exchangeRate;
+
+  useEffect(() => {
+    const fetchWealth = async () => {
+      try {
+        const response = await fetch('http://localhost:8001/api/wealth');
+        if (response.ok) {
+          const data = await response.json();
+          setWealth({
+            hiveCoins: data.hive_coins,
+            mindCredits: data.mind_credits,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch wealth:', error);
+      }
+    };
+
+    fetchWealth();
+    // Poll every 30 seconds
+    const interval = setInterval(fetchWealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const exchangeHCToMC = (amount) => {
     const normalizedAmount = Number(amount);

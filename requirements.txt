@@ -23,3 +23,6 @@ httpx>=0.27.0
 # without freezing the background engine
 aiofiles>=23.2.1
 PyYAML>=6.0.1
+# --- Database ---
+# Required for async connection to MongoDB
+motor>=3.3.1

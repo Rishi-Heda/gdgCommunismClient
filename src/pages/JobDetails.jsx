@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -16,12 +16,33 @@ import {
   Info,
   MoreVertical
 } from 'lucide-react';
-import { mockJobs } from '../data/mock';
 import ScrambleText from '../components/common/ScrambleText';
 
 const JobDetails = () => {
   const { id } = useParams();
-  const job = mockJobs.find(j => j.id === id) || mockJobs[0];
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const response = await fetch(`http://localhost:8001/api/jobs/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setJob(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch job details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [id]);
+
+  if (loading) return <div className="p-20 text-center font-mono uppercase tracking-widest text-text-muted">Loading System Data...</div>;
+  if (!job) return <div className="p-20 text-center font-mono uppercase tracking-widest text-status-red">Job Not Found</div>;
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -65,8 +86,8 @@ const JobDetails = () => {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-mono text-[#555] uppercase tracking-widest">
             <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> ID: <ScrambleText text={job.id} /></span>
             <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Submitter: @<ScrambleText text={job.submitter} /></span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Started: <ScrambleText text={job.started} /></span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Assigned Node: <span className="text-accent-primary underline decoration-accent-primary/30 cursor-pointer"><ScrambleText text={job.node} /></span></span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Started: <ScrambleText text={job.started_at || '-'} /></span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#555]" /> Assigned Node: <span className="text-accent-primary underline decoration-accent-primary/30 cursor-pointer"><ScrambleText text={job.assigned_node_id || 'PENDING'} /></span></span>
           </div>
         </div>
         

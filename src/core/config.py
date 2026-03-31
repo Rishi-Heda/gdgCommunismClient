@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     NODE_TOKEN: str = os.getenv("NODE_TOKEN", "")
     TCP_TRANSPORT_TIMEOUT_SECONDS: int = int(os.getenv("TCP_TRANSPORT_TIMEOUT_SECONDS", "60"))
     DEFAULT_DOCKER_IMAGE: str = os.getenv("DEFAULT_DOCKER_IMAGE", "python:3.11-slim")
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "")
 
     IDLE_TIME_REQUIRED_SECONDS: int = 20
     MAX_IDLE_CPU_PERCENT: float = 30.0

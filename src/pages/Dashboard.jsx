@@ -1,32 +1,53 @@
-import React, { useState } from 'react';
-import { mockJobs, mockNodes, mockActivity } from '../data/mock';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ScrambleText from '../components/common/ScrambleText';
 import { useWealth } from '../context/WealthContext';
 import {
   Users,
   Settings,
-  TrendingUp,
   ArrowUpRight,
-  MoreHorizontal,
   LayoutGrid,
-  Plus,
-  Globe,
-  CreditCard,
-  Hexagon,
   Clock
 } from 'lucide-react';
 
 const Dashboard = () => {
   const [isContributing, setIsContributing] = useState(false);
-  const { wealth } = useWealth();
+  const { wealth: wealthData } = useWealth();
+
+  const [jobs, setJobs] = useState([]);
+  const [nodes, setNodes] = useState([]);
+  const [activity, setActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [jobsRes, nodesRes, activityRes] = await Promise.all([
+          fetch('http://localhost:8001/api/jobs'),
+          fetch('http://localhost:8001/api/nodes'),
+          fetch('http://localhost:8001/api/activity')
+        ]);
+
+        if (jobsRes.ok) setJobs(await jobsRes.json());
+        if (nodesRes.ok) setNodes(await nodesRes.json());
+        if (activityRes.ok) setActivity(await activityRes.json());
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 10000); // Poll every 10s
+    return () => clearInterval(interval);
+  }, []);
 
   const stats = [
-    { label: 'Active Contributors', value: '1,248', trend: '+12 today', icon: Users },
-    { label: 'Jobs Running', value: '412', trend: '+5 today', icon: Settings },
-    { label: 'Network Points', value: '4,280', trend: 'Global Avg', icon: Hexagon },
-    { label: 'Credits Balance', value: wealth.mindCredits.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
-    { label: 'Active Tasks', value: '42', trend: '1.2s avg latency', icon: Clock },
+    { label: 'Active Contributors', value: nodes.length.toString(), trend: '+2 today', icon: Users },
+    { label: 'Jobs Running', value: jobs.filter(j => j.status === 'RUNNING').length.toString(), trend: '+5 today', icon: Settings },
+    { label: 'Credits Balance', value: wealthData?.mindCredits?.toLocaleString() || "0", trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Active Tasks', value: jobs.length.toString(), trend: '1.2s avg latency', icon: Clock },
   ];
 
   const getStatusColor = (status) => {
@@ -209,7 +230,7 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#222]">
-                  {mockJobs.map((job) => (
+                  {jobs.map((job) => (
                     <tr key={job.id} className="hover:bg-[#111] transition-colors group cursor-pointer">
                       <td className="px-4 py-3">
                         <div className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors truncate">
@@ -221,7 +242,7 @@ const Dashboard = () => {
                       </td>
                       <td className="px-4 py-3 text-[11px] font-mono text-text-secondary truncate">@{job.submitter}</td>
                       <td className="px-4 py-3 text-[9px] font-mono text-text-muted uppercase truncate">
-                        {job.node || 'node-77a2'}
+                        {job.assigned_node_id || 'PENDING'}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono border whitespace-nowrap ${getStatusColor(job.status)}`}>
@@ -262,7 +283,7 @@ const Dashboard = () => {
 
             <div className="p-6 pb-4 border-b border-[#222]">
               <div className="text-4xl font-mono font-bold text-accent-primary">
-                <ScrambleText text={wealth.mindCredits.toLocaleString()} />
+                <ScrambleText text={wealthData?.mindCredits?.toLocaleString() || "0"} />
               </div>
               <p className="text-[10px] font-mono text-text-muted uppercase mt-1 tracking-widest">CREDITS AVAILABLE</p>
             </div>
@@ -348,7 +369,7 @@ const Dashboard = () => {
           </div>
 
           {/* Other Nodes */}
-          {mockNodes.slice(0, 3).map((node) => (
+          {nodes.map((node) => (
             <div key={node.id} className="bg-surface-card border border-[#222] p-5 rounded-2xl hover:border-accent-primary transition-all duration-300">
               <div className="flex justify-between items-start mb-4">
                 <div className="text-xs font-mono text-accent-primary">
@@ -403,7 +424,7 @@ const Dashboard = () => {
             <p className="text-xs text-text-muted mt-1 font-mono uppercase tracking-[0.1em]">LATEST NETWORK EVENTS</p>
           </div>
           <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
-            {mockActivity.map((event) => (
+            {activity.map((event) => (
               <div key={event.id} className="flex gap-4 group">
                 <div className="flex flex-col items-center">
                   <div className={`p-1 rounded-full bg-surface-elevated border border-[#222] group-hover:border-accent-primary transition-colors`}>
