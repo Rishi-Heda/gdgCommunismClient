@@ -29,7 +29,12 @@ const Dashboard = () => {
         ]);
 
         if (jobsRes.ok) setJobs(await jobsRes.json());
-        if (nodesRes.ok) setNodes(await nodesRes.json());
+        
+        if (nodesRes.ok) {
+          const nodesData = await nodesRes.json();
+          setNodes(nodesData.nodes || []);
+        }
+        
         if (activityRes.ok) setActivity(await activityRes.json());
       } catch (error) {
         console.error('Error fetching dashboard data:', error);

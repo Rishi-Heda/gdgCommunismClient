@@ -175,22 +175,41 @@ async def create_job(job_data: dict):
 
 
 @router.get("/nodes")
-async def list_nodes():
+async def list_nodes(limit: int = 50, skip: int = 0):
     try:
         insights_coll = await get_node_insights_collection()
         specs_coll = await get_system_specs_collection()
 
-        insights = await insights_coll.find({}, {"_id": 0}).to_list(length=50)
+        # Get total count
+        total_nodes = await insights_coll.count_documents({})
+
+        # Fetch paginated insights
+        insights = await insights_coll.find({}, {"_id": 0}).skip(skip).to_list(length=limit)
         
-        # Merge with specs for each node
+        jobs_coll = await get_jobs_collection()
+
+        # Merge with specs and derived metrics for each node
         detailed_nodes = []
         for insight in insights:
             uid = insight.get("userID")
             spec = await specs_coll.find_one({"userID": uid}, {"_id": 0})
             
+            # Count completed jobs
+            jobs_completed = await jobs_coll.count_documents({"assigned_node_id": uid, "status": "COMPLETED"})
+            
+            # Format uptime
+            active_seconds = insight.get("active_time_seconds", 0)
+            hours = active_seconds // 3600
+            minutes = (active_seconds % 3600) // 60
+            uptime_str = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
+
             node_data = {
                 "id": uid,
                 "status": "ONLINE" if insight.get("utilization_percent", 0) > 0 else "OFFLINE",
+                "location": insight.get("extra_metrics", {}).get("region", "Global/Edge"),
+                "jobs_completed": jobs_completed,
+                "reputation": f"{4.5 + (min(jobs_completed, 50) / 100):.1f}",
+                "uptime": uptime_str,
                 "metrics": {
                     "cpu": insight.get("cpu_utilization_percent", 0),
                     "gpu": insight.get("gpu_utilization_percent", 0),
@@ -204,7 +223,10 @@ async def list_nodes():
             }
             detailed_nodes.append(node_data)
             
-        return detailed_nodes
+        return {
+            "nodes": detailed_nodes,
+            "total": total_nodes
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
