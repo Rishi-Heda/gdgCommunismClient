@@ -28,7 +28,7 @@ const Settings = () => {
             </h3>
             <button 
               onClick={() => setNodeActive(!nodeActive)}
-              className={`px-4 py-2 rounded-full font-mono text-[10px] font-bold tracking-widest transition-all ${nodeActive ? 'bg-[#FAFF00] text-black shadow-[0_0_20px_rgba(250,255,0,0.3)]' : 'bg-white/5 text-text-muted'}`}
+              className={`px-4 py-2 rounded-full font-mono text-[10px] font-bold tracking-widest transition-all ${nodeActive ? 'bg-[#FAFF00] text-black shadow-[0_0_20px_rgba(250,255,0,0.3)]' : 'bg-white/5 text-text-secondary'}`}
             >
               {nodeActive ? 'NODE ACTIVE' : 'NODE OFFLINE'}
             </button>
@@ -37,7 +37,7 @@ const Settings = () => {
           <div className="space-y-12">
             <div>
               <div className="flex justify-between mb-4">
-                <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-muted">Compute Power Allocation</label>
+                <label className="text-[10px] font-mono font-bold uppercase tracking-widest text-text-secondary">Compute Power Allocation</label>
                 <span className="text-[#FAFF00] font-mono font-bold italic">{computeAllocation}%</span>
               </div>
               <input 
@@ -47,7 +47,7 @@ const Settings = () => {
                 onChange={(e) => setComputeAllocation(e.target.value)}
                 className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#FAFF00]" 
               />
-              <div className="flex justify-between mt-2 text-[9px] font-mono text-text-muted uppercase italic">
+              <div className="flex justify-between mt-2 text-[9px] font-mono text-text-secondary uppercase italic">
                 <span>Power Saving</span>
                 <span>High Fidelity</span>
               </div>
@@ -110,7 +110,7 @@ const Settings = () => {
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <p className="text-[10px] font-mono text-text-muted uppercase tracking-[0.2em] mb-4">Level 4 Architect</p>
+                <p className="text-[10px] font-mono text-text-secondary uppercase tracking-[0.2em] mb-4">Level 4 Architect</p>
                 <div className="flex items-center justify-center gap-2 px-3 py-1 bg-[#FAFF00]/10 border border-[#FAFF00]/20 rounded-full w-fit mx-auto">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#FAFF00] animate-pulse" />
                   <span className="text-[9px] font-mono font-bold text-[#FAFF00] uppercase tracking-widest">Network Synchronized</span>
@@ -135,7 +135,7 @@ const Settings = () => {
               <div className="w-[1px] h-8 bg-white/10" />
               <div className="flex flex-col items-end">
                 <div className="text-[9px] font-mono text-text-muted uppercase leading-none">Market Assets</div>
-                <div className="text-lg font-black italic text-[#888]">{wealth.hiveCoins.toLocaleString()} HC</div>
+                <div className="text-lg font-black italic text-text-secondary">{wealth.hiveCoins.toLocaleString()} HC</div>
               </div>
             </div>
           </div>
