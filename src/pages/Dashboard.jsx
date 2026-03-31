@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { mockJobs, mockNodes, mockActivity } from '../data/mock';
-import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ScrambleText from '../components/common/ScrambleText';
 import { useWealth } from '../context/WealthContext';
@@ -9,7 +7,12 @@ import {
   Settings,
   ArrowUpRight,
   LayoutGrid,
-  Clock
+  Clock,
+  Globe,
+  ChevronRight,
+  Database,
+  Cpu,
+  Monitor
 } from 'lucide-react';
 
 const SegmentedProgress = ({ percent, color = "#FAFF00" }) => {
@@ -37,7 +40,6 @@ const NodeGauge = ({ label, value, specs, color = "#FAFF00" }) => {
       <div className="relative w-48 h-32 flex items-center justify-center pt-8 overflow-hidden">
         <svg className="w-40 h-40 transform translate-y-4">
           {[...Array(segments)].map((_, i) => {
-            // Semi-circle from -90 to 90 degrees
             const startAngle = -90 + (i * 180 / segments);
             const midAngle = startAngle + (180 / segments / 2);
             return (
@@ -81,18 +83,6 @@ const Dashboard = () => {
   const { wealth } = useWealth();
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const stats = [
-    { label: 'Active Contributors', value: '1,248', trend: '+12 today', icon: Users },
-    { label: 'Jobs Running', value: '412', trend: '+5 today', icon: Settings },
-    { label: 'Credits Balance', value: wealth.mindCredits.toLocaleString(), trend: '+142.5 today', icon: ArrowUpRight },
-    { label: 'Active Tasks', value: '42', trend: '1.2s avg latency', icon: Clock },
-  const { wealth: wealthData } = useWealth();
-
   const [jobs, setJobs] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [activity, setActivity] = useState([]);
@@ -111,7 +101,8 @@ const Dashboard = () => {
         
         if (nodesRes.ok) {
           const nodesData = await nodesRes.json();
-          setNodes(nodesData.nodes || []);
+          // API returns { nodes: [...] } based on previous context
+          setNodes(nodesData.nodes || nodesData || []);
         }
         
         if (activityRes.ok) setActivity(await activityRes.json());
@@ -127,41 +118,39 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const stats = [
     { label: 'Active Contributors', value: nodes.length.toString(), trend: '+2 today', icon: Users },
     { label: 'Jobs Running', value: jobs.filter(j => j.status === 'RUNNING').length.toString(), trend: '+5 today', icon: Settings },
-    { label: 'Credits Balance', value: wealthData?.mindCredits?.toLocaleString() || "0", trend: '+142.5 today', icon: ArrowUpRight },
+    { label: 'Credits Balance', value: wealth?.mindCredits?.toLocaleString() || "0", trend: '+142.5 today', icon: ArrowUpRight },
     { label: 'Active Tasks', value: jobs.length.toString(), trend: '1.2s avg latency', icon: Clock },
   ];
 
-  // Tripled stats to support seamless circular/infinite scroll
   const tripleStats = [...stats, ...stats, ...stats];
 
   useEffect(() => {
     if (scrollRef.current) {
-      // Initialize to the middle set of cards for bi-directional scroll
       const singleSetWidth = scrollRef.current.scrollWidth / 3;
       scrollRef.current.scrollLeft = singleSetWidth;
     }
-  }, []);
+  }, [nodes.length, jobs.length]); // Re-initialize if data changes and it affects width
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth } = scrollRef.current;
     const singleSetWidth = scrollWidth / 3;
 
-    // Reset scroll if reaching cloned boundaries
-    // We bypass smooth scroll for the reset so it's instant and invisible
     if (scrollLeft <= 5) {
       scrollRef.current.style.scrollBehavior = 'auto';
-      scrollRef.current.scrollLeft = (scrollWidth / 3);
-      // We don't re-enable smooth-scroll here; the 'scroll-smooth' class handles it for non-reset scrolls
-      // and we want it 'auto' during the next frame if needed
+      scrollRef.current.scrollLeft = singleSetWidth;
     } else if (scrollLeft >= singleSetWidth * 2 - 5) {
       scrollRef.current.style.scrollBehavior = 'auto';
       scrollRef.current.scrollLeft = singleSetWidth;
     } else {
-      // Re-enable smooth behavior for user/programmatic scrolls
       scrollRef.current.style.scrollBehavior = 'smooth';
     }
   };
@@ -171,16 +160,8 @@ const Dashboard = () => {
       case 'RUNNING': return 'text-status-green bg-status-green/10 border-status-green/20';
       case 'PENDING': return 'text-status-yellow bg-status-yellow/10 border-status-yellow/20';
       case 'FAILED': return 'text-status-red bg-status-red/10 border-status-red/20';
+      case 'COMPLETED': return 'text-status-blue bg-status-blue/10 border-status-blue/20';
       default: return 'text-text-muted bg-[#111] border-[#222]';
-    }
-  };
-
-  const getCheckpointStyle = (status) => {
-    switch (status) {
-      case 'RUNNING': return { label: 'LIVE', color: 'text-status-green bg-status-green/10 border-status-green/20' };
-      case 'PENDING': return { label: 'QUEUED', color: 'text-status-yellow bg-status-yellow/10 border-status-yellow/20' };
-      case 'FAILED': return { label: 'REDISTRIBUTED', color: 'text-status-red bg-status-red/10 border-status-red/20' };
-      default: return { label: 'UNKNOWN', color: 'text-text-muted bg-[#111] border-[#222]' };
     }
   };
 
@@ -194,7 +175,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-text-primary pb-20 px-6 lg:px-8">
-      {/* SECTION 1 — PAGE HEADER (REFURBISHED) */}
+      {/* SECTION 1 — PAGE HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-10 pt-6 border-b border-white/5 pb-8">
         <div className="flex items-center gap-6 mb-4 lg:mb-0">
           <div>
@@ -266,7 +247,6 @@ const Dashboard = () => {
 
       {/* SECTION 2 — STAT CARDS (CIRCULAR SCROLL) */}
       <div className="relative mb-12 -mx-6 lg:-mx-10 overflow-hidden group/scroll bg-[#0A0A0A] rounded-none">
-        {/* Left Gradient Fade */}
         <div className="absolute top-0 left-0 bottom-8 w-40 bg-gradient-to-r from-[#0A0A0A] to-transparent pointer-events-none z-10" />
         
         <div 
@@ -294,13 +274,11 @@ const Dashboard = () => {
                 <ScrambleText text={stat.value} />
               </div>
               
-              {/* Subtle card glow */}
               <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-accent-primary/5 rounded-full blur-[80px] group-hover:bg-accent-primary/10 transition-all duration-1000" />
             </div>
           ))}
         </div>
         
-        {/* Right Gradient Fade Indicator */}
         <div className="absolute top-0 right-0 bottom-8 w-40 bg-gradient-to-l from-[#0A0A0A] to-transparent pointer-events-none z-10" />
       </div>
 
@@ -336,7 +314,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* SECTION 4 — MAIN GRID (REFURBISHED) */}
+      {/* SECTION 4 — MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="lg:col-span-2">
           <section className="bg-surface-card border border-white/5 rounded-none overflow-hidden h-full">
@@ -349,8 +327,8 @@ const Dashboard = () => {
                 EXPAND REGISTRY <ArrowUpRight className="w-3 h-3" />
               </Link>
             </div>
-            <div className="overflow-hidden">
-              <table className="w-full text-left border-collapse table-fixed">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse table-fixed min-w-[700px]">
                 <thead>
                   <tr className="bg-black/40">
                     <th className="w-[30%] px-6 py-4 text-[9px] font-mono tracking-[0.2em] text-[#555] uppercase whitespace-nowrap">Process Identifier</th>
@@ -361,28 +339,20 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {mockJobs.map((job) => (
+                  {jobs.map((job) => (
                     <tr key={job.id} className="hover:bg-accent-primary/[0.03] transition-all duration-300 group cursor-pointer relative">
                       <td className="px-6 py-5 relative">
                         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-accent-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="text-[13px] font-bold text-text-primary group-hover:text-accent-primary transition-colors truncate">
-                <tbody className="divide-y divide-[#222]">
-                  {jobs.map((job) => (
-                    <tr key={job.id} className="hover:bg-[#111] transition-colors group cursor-pointer">
-                      <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors truncate">
                           {job.name}
                         </div>
                         <div className="text-[9px] font-mono text-text-muted mt-1 uppercase tracking-wider">
-                          PID: <ScrambleText text={job.id} />
+                          PID: {job.id}
                         </div>
                       </td>
                       <td className="px-4 py-5 text-[11px] font-mono text-text-secondary truncate">@{job.submitter}</td>
                       <td className="px-4 py-5 text-[9px] font-mono text-accent-primary/60 uppercase truncate">
-                        {job.node || 'NLC-77A2'}
-                      <td className="px-4 py-3 text-[11px] font-mono text-text-secondary truncate">@{job.submitter}</td>
-                      <td className="px-4 py-3 text-[9px] font-mono text-text-muted uppercase truncate">
-                        {job.assigned_node_id || 'PENDING'}
+                        {job.node || job.assigned_node_id || 'PENDING'}
                       </td>
                       <td className="px-4 py-5">
                         <span className={`px-2.5 py-1 rounded-sm text-[9px] font-bold font-mono border-l-2 shadow-sm whitespace-nowrap ${getStatusColor(job.status)}`}>
@@ -397,6 +367,13 @@ const Dashboard = () => {
                       </td>
                     </tr>
                   ))}
+                  {jobs.length === 0 && !loading && (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-10 text-center text-text-muted font-mono text-xs uppercase tracking-widest opacity-40">
+                        NO ACTIVE PROCESSES DETECTED
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -412,15 +389,12 @@ const Dashboard = () => {
 
             <div className="p-8 pb-6 border-b border-white/5 bg-black/20">
               <div className="text-5xl font-black font-mono text-accent-primary tracking-tighter hover:scale-[1.02] transition-transform cursor-pointer origin-left">
-                <ScrambleText text={wealth.mindCredits.toLocaleString()} />
-            <div className="p-6 pb-4 border-b border-[#222]">
-              <div className="text-4xl font-mono font-bold text-accent-primary">
-                <ScrambleText text={wealthData?.mindCredits?.toLocaleString() || "0"} />
+                <ScrambleText text={wealth?.mindCredits?.toLocaleString() || "0"} />
               </div>
               <p className="text-[10px] font-mono text-text-muted uppercase mt-2 tracking-[0.3em] font-bold">MINDCREDITS (MC) SYNCED</p>
             </div>
 
-            <div className="flex-1 p-0 overflow-y-auto custom-scrollbar no-scrollbar">
+            <div className="flex-1 p-0 overflow-y-auto custom-scrollbar no-scrollbar min-h-[300px]">
               <div className="divide-y divide-white/5">
                 {transactions.map((tx, i) => (
                   <div key={i} className="flex justify-between items-center p-6 hover:bg-white/[0.02] transition-colors group">
@@ -446,6 +420,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* SECTION 5 — LIVE COMPUTE NODES */}
       <div className="mb-8">
         <div className="mb-4 flex justify-between items-center px-1">
           <div>
@@ -456,7 +431,8 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-surface-card border border-accent-primary p-5 rounded-2xl relative">
+          {/* Local Node Indicator */}
+          <div className="bg-surface-card border border-accent-primary p-5 rounded-2xl relative group">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center">
                 <div className="text-xs font-mono text-accent-primary">
@@ -464,85 +440,91 @@ const Dashboard = () => {
                 </div>
                 <span className="text-[10px] font-mono bg-accent-primary text-black px-1.5 py-0.5 rounded ml-2 uppercase font-bold">YOU</span>
               </div>
-              <div className={`w-2 h-2 rounded-full bg-status-green animate-pulse`} />
+              <div className={`w-2 h-2 rounded-full bg-status-green animate-pulse shadow-[0_0_8px_rgb(57,255,106)]`} />
             </div>
 
             <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-[10px] font-mono text-text-muted mb-1 uppercase tracking-tighter">
-                  <span>CPU: Intel i9-13900K</span>
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
+                  <span className="flex items-center gap-1"><Cpu className="w-2.5 h-2.5" /> Intel i9-13900K</span>
                   <span>34%</span>
                 </div>
-                <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-                  <div className="bg-text-muted h-full" style={{ width: '34%' }} />
+                <div className="bg-white/5 h-1 rounded-full overflow-hidden">
+                  <div className="bg-text-muted h-full opacity-40" style={{ width: '34%' }} />
                 </div>
               </div>
-              <div>
-                <div className="flex justify-between text-[10px] font-mono text-text-muted mb-1 uppercase tracking-tighter">
-                  <span>GPU: RTX 4080</span>
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
+                  <span className="flex items-center gap-1"><Monitor className="w-2.5 h-2.5" /> RTX 4080</span>
                   <span>67%</span>
                 </div>
-                <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
+                <div className="bg-white/5 h-1 rounded-full overflow-hidden">
                   <div className="bg-accent-primary h-full" style={{ width: '67%' }} />
                 </div>
               </div>
-              <div>
-                <div className="flex justify-between text-[10px] font-mono text-text-muted mb-1 uppercase tracking-tighter">
-                  <span>RAM: 32GB</span>
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
+                  <span className="flex items-center gap-1"><Database className="w-2.5 h-2.5" /> 32GB DDR5</span>
                   <span>51%</span>
                 </div>
-                <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-                  <div className="bg-status-yellow h-full" style={{ width: '51%' }} />
+                <div className="bg-white/5 h-1 rounded-full overflow-hidden">
+                  <div className="bg-status-yellow h-full opacity-60" style={{ width: '51%' }} />
                 </div>
               </div>
             </div>
           </div>
 
-          {mockNodes.slice(0, 3).map((node) => (
-          {/* Other Nodes */}
-          {nodes.map((node) => (
-            <div key={node.id} className="bg-surface-card border border-[#222] p-5 rounded-2xl hover:border-accent-primary transition-all duration-300">
+          {/* Network Nodes */}
+          {nodes.slice(0, 7).map((node) => (
+            <div key={node.id} className="bg-surface-card border border-white/5 p-5 rounded-2xl hover:border-accent-primary/30 transition-all duration-300 group">
               <div className="flex justify-between items-start mb-4">
-                <div className="text-xs font-mono text-accent-primary">
-                  <ScrambleText text={node.id} />
+                <div className="text-xs font-mono text-text-primary group-hover:text-accent-primary transition-colors">
+                  {node.id}
                 </div>
-                <div className={`w-2 h-2 rounded-full ${node.status === 'ONLINE' ? 'bg-status-green' : 'bg-status-red'} animate-pulse`} />
+                <div className={`w-2 h-2 rounded-full ${node.status === 'ONLINE' ? 'bg-status-green shadow-[0_0_6px_rgb(57,255,106)]' : 'bg-status-red'} animate-pulse`} />
               </div>
 
               <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-[10px] font-mono text-text-muted mb-1 uppercase tracking-tighter">
-                    <span>CPU: {node.specs.cpu}</span>
-                    <span>{node.metrics.cpu}%</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
+                    <span>CPU: {node.specs?.cpu || 'Unknown'}</span>
+                    <span>{node.metrics?.cpu || 0}%</span>
                   </div>
-                  <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-                    <div className="bg-text-muted h-full" style={{ width: `${node.metrics.cpu}%` }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[10px] font-mono text-text-muted mb-1 uppercase tracking-tighter">
-                    <span>GPU: {node.specs.gpu}</span>
-                    <span>{node.metrics.gpu}%</span>
-                  </div>
-                  <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-                    <div className="bg-accent-primary h-full" style={{ width: `${node.metrics.gpu}%` }} />
+                  <div className="bg-white/5 h-1 rounded-full overflow-hidden">
+                    <div className="bg-white/20 h-full" style={{ width: `${node.metrics?.cpu || 0}%` }} />
                   </div>
                 </div>
-                <div>
-                  <div className="flex justify-between text-[10px] font-mono text-text-muted mb-1 uppercase tracking-tighter">
-                    <span>RAM: {node.specs.ram}</span>
-                    <span>{node.metrics.ram}%</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
+                    <span>GPU: {node.specs?.gpu || 'Unknown'}</span>
+                    <span>{node.metrics?.gpu || 0}%</span>
                   </div>
-                  <div className="bg-surface-elevated h-1 rounded-full overflow-hidden">
-                    <div className="bg-status-yellow h-full" style={{ width: `${node.metrics.ram}%` }} />
+                  <div className="bg-white/5 h-1 rounded-full overflow-hidden">
+                    <div className="bg-accent-primary/60 h-full" style={{ width: `${node.metrics?.gpu || 0}%` }} />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-[9px] font-mono text-text-muted uppercase tracking-tighter">
+                    <span>RAM: {node.specs?.ram || 'Unknown'}</span>
+                    <span>{node.metrics?.ram || 0}%</span>
+                  </div>
+                  <div className="bg-white/5 h-1 rounded-full overflow-hidden">
+                    <div className="bg-status-yellow/60 h-full" style={{ width: `${node.metrics?.ram || 0}%` }} />
                   </div>
                 </div>
               </div>
             </div>
           ))}
+          
+          {nodes.length === 0 && !loading && (
+            <div className="col-span-1 border border-dashed border-white/10 p-5 rounded-2xl flex items-center justify-center">
+              <span className="text-[10px] font-mono text-text-muted uppercase tracking-widest opacity-40">SEARCHING_NODES...</span>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* SECTION 6 — TERMINAL LOGS */}
       <div className="grid grid-cols-1 gap-8">
         <section className="bg-[#050505] border border-white/5 rounded-none h-[500px] flex flex-col font-mono shadow-2xl relative overflow-hidden group/term">
           {/* Terminal Header */}
@@ -553,44 +535,29 @@ const Dashboard = () => {
               <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
             </div>
             <div className="text-[10px] text-text-muted tracking-widest font-bold">SYSTEM_DIAGNOSTICS_V4.0.2</div>
-            <div className="w-12" /> {/* alignment spacer */}
+            <div className="w-12" />
           </div>
 
           {/* Log Stream */}
           <div className="flex-1 p-6 space-y-1.5 overflow-y-auto no-scrollbar bg-black/40">
-            {mockActivity.map((event, i) => {
+            {activity.map((event, i) => {
               const logLevel = 
                 event.color === 'green' ? 'SUCCESS' : 
                 event.color === 'red' ? 'CRITICAL' : 
-                event.color === 'yellow' ? 'WARNING' : 'SYSTEM';
+                event.color === 'yellow' ? 'WARNING' : 
+                event.color === 'blue' ? 'INFO' : 'SYSTEM';
               
               const levelColor = 
                 event.color === 'green' ? 'text-status-green' : 
                 event.color === 'red' ? 'text-status-red' : 
-                event.color === 'yellow' ? 'text-status-yellow' : 'text-white/40';
+                event.color === 'yellow' ? 'text-status-yellow' : 
+                event.color === 'blue' ? 'text-status-blue' : 'text-white/40';
 
               return (
-                <div key={event.id} className="text-[11px] leading-relaxed group/line flex gap-3">
+                <div key={event.id || i} className="text-[11px] leading-relaxed group/line flex gap-3">
                   <span className="text-white/20 whitespace-nowrap">[{event.time}]</span>
                   <span className={`${levelColor} font-bold whitespace-nowrap w-20`}>[{logLevel}]</span>
                   <span className="text-text-secondary group-hover:text-white transition-colors">{event.text}</span>
-          <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
-            {activity.map((event) => (
-              <div key={event.id} className="flex gap-4 group">
-                <div className="flex flex-col items-center">
-                  <div className={`p-1 rounded-full bg-surface-elevated border border-[#222] group-hover:border-accent-primary transition-colors`}>
-                    <div className={`w-1.5 h-1.5 rounded-full ${event.color === 'green' ? 'bg-status-green' :
-                        event.color === 'red' ? 'bg-status-red' :
-                          event.color === 'yellow' ? 'bg-status-yellow' : 'bg-text-secondary'
-                      }`} />
-                  </div>
-                  <div className="w-[1px] flex-1 bg-[#222] mt-2 group-last:hidden" />
-                </div>
-                <div className="pb-6 last:pb-0">
-                  <p className="text-xs text-text-primary leading-relaxed">{event.text}</p>
-                  <span className="text-[10px] font-mono text-text-muted uppercase mt-1 inline-block">
-                    <ScrambleText text={event.time} />
-                  </span>
                 </div>
               );
             })}

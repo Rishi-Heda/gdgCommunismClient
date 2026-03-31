@@ -187,8 +187,7 @@ input[type=number] {
 @utility no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
-}
-
-@utility no-scrollbar::-webkit-scrollbar {
-  display: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
