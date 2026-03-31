@@ -2,9 +2,6 @@ import asyncio
 from enum import Enum
 from typing import Optional, Dict, Any
 
-# ==========================================
-# 1. State Definitions
-# ==========================================
 
 class AppMode(str, Enum):
     """
@@ -18,15 +15,12 @@ class EngineStatus(str, Enum):
     """
     Represents the Machine's Reality. Controlled by background hardware monitors.
     """
-    OFFLINE = "offline"             # AppMode is IDLE or REQUEST
-    WAITING = "waiting_for_idle"    # AppMode is DONATE, but user is active on PC
-    READY = "ready_for_task"        # PC is idle, polling Master Server
-    COMPUTING = "computing"         # Docker container is actively running
-    ABORTING = "aborting_task"      # User clicked IDLE mid-task; shutting down safely
+    OFFLINE = "offline"                                         
+    WAITING = "waiting_for_idle"                                                 
+    READY = "ready_for_task"                                           
+    COMPUTING = "computing"                                               
+    ABORTING = "aborting_task"                                                        
 
-# ==========================================
-# 2. The State Manager Singleton
-# ==========================================
 
 class NodeState:
     """
@@ -37,16 +31,12 @@ class NodeState:
         self._status: EngineStatus = EngineStatus.OFFLINE
         self._active_task_id: Optional[str] = None
         
-        # Asyncio lock prevents race conditions if the UI and background 
-        # threads try to change state at the exact same millisecond.
         self._lock = asyncio.Lock()
 
     async def set_mode(self, new_mode: AppMode) -> None:
         async with self._lock:
             self._mode = new_mode
-            # Instantly update engine status based on new mode
             if new_mode == AppMode.DONATE:
-                # Donation mode should immediately enter the idle detection flow.
                 if self._status not in [EngineStatus.COMPUTING, EngineStatus.ABORTING]:
                     self._status = EngineStatus.WAITING
             else:
@@ -64,7 +54,7 @@ class NodeState:
             if task_id is not None:
                 self._active_task_id = task_id
             if new_status in [EngineStatus.OFFLINE, EngineStatus.WAITING, EngineStatus.READY]:
-                self._active_task_id = None # Clear task ID if we aren't computing
+                self._active_task_id = None                                       
 
     def get_engine_status(self) -> EngineStatus:
         return self._status
@@ -80,21 +70,15 @@ class NodeState:
             "active_task_id": self._active_task_id
         }
 
-# ==========================================
-# 3. Global Instance & Helper Functions
-# ==========================================
 
-# Create a single global instance of the state
 _global_state = NodeState()
 
-# Synchronous wrappers for simple reads (matching the main.py provided earlier)
 def get_current_state() -> AppMode:
     return _global_state.get_mode()
 
 def get_full_system_state() -> Dict[str, Any]:
     return _global_state.get_full_state()
 
-# Asynchronous wrappers for state mutations
 async def set_current_state(mode: AppMode) -> None:
     await _global_state.set_mode(mode)
 

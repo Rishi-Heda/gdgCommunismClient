@@ -5,16 +5,12 @@ import time
 import zipfile
 from pathlib import Path
 
-# ==========================================
-# Workspace Path Definitions
-# ==========================================
-# This creates a "workspace" folder in the same directory as main.py
 WORKSPACE_DIR = Path(os.getcwd()) / "workspace"
 
 INPUTS_DIR = WORKSPACE_DIR / "inputs"
 OUTPUTS_DIR = WORKSPACE_DIR / "outputs"
-ARCHIVES_DIR = WORKSPACE_DIR / "archives" # Stores the zipped files before upload
-ARTIFACTS_DIR = WORKSPACE_DIR / "artifacts" # Durable local artifact history
+ARCHIVES_DIR = WORKSPACE_DIR / "archives"
+ARTIFACTS_DIR = WORKSPACE_DIR / "artifacts"
 
 def setup_workspace():
     """

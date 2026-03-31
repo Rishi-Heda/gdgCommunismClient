@@ -39,7 +39,10 @@ async def task_polling_engine():
     while True:
         state = get_full_system_state()
 
-        if state["app_mode"] == AppMode.DONATE.value and state["engine_status"] == EngineStatus.READY.value:
+        if state["app_mode"] == AppMode.DONATE.value and state["engine_status"] in {
+            EngineStatus.READY.value,
+            EngineStatus.WAITING.value,
+        }:
             print("Asking server for assignment...")
             task_data = await fetch_assignment()
 

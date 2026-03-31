@@ -1,9 +1,7 @@
-# src/storage/local_db.py
 import json
 import os
 from pathlib import Path
 
-# Save this in the root of the project
 DB_FILE_PATH = Path("local_node_stats.json")
 
 def _initialize_db():
