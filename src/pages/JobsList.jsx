@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   PlayCircle, 
   Search, 
@@ -11,11 +11,34 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { mockJobs } from '../data/mock';
 import ScrambleText from '../components/common/ScrambleText';
 
 const JobsList = () => {
   const [filterStatus, setFilterStatus] = useState('All');
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch('http://localhost:8001/api/jobs');
+        if (response.ok) {
+          const data = await response.json();
+          setJobs(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  const filteredJobs = jobs.filter(job => 
+    filterStatus === 'All' || job.status === filterStatus.toUpperCase()
+  );
   
   const getStatusColor = (status) => {
     switch (status) {
@@ -117,11 +140,11 @@ const JobsList = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#222]">
-              {[...mockJobs, ...mockJobs].map((job, idx) => (
+              {filteredJobs.map((job, idx) => (
                 <tr key={`${job.id}-${idx}`} className="hover:bg-[#111] transition-colors group">
                   <td className="px-6 py-4">
                     <span className="text-[10px] font-mono text-accent-primary uppercase tracking-tighter">
-                      #<ScrambleText text={job.id.split('-')[1]} />
+                      #<ScrambleText text={job.id.includes('-') ? job.id.split('-')[1] : job.id.slice(0, 4)} />
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -133,9 +156,9 @@ const JobsList = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded-full bg-surface-elevated border border-[#222] flex items-center justify-center">
-                        <span className="text-[8px] text-text-muted uppercase">{job.submitter[0]}</span>
+                        <span className="text-[8px] text-text-muted uppercase">{job.submitter ? job.submitter[0] : '?'}</span>
                       </div>
-                      <span className="text-xs font-mono text-text-secondary">@<ScrambleText text={job.submitter} /></span>
+                      <span className="text-xs font-mono text-text-secondary">@<ScrambleText text={job.submitter || 'anonymous'} /></span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -145,14 +168,14 @@ const JobsList = () => {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs font-mono text-text-muted">
-                      <ScrambleText text={job.node} />
+                      <ScrambleText text={job.assigned_node_id || 'unassigned'} />
                     </span>
                   </td>
                   <td className="px-6 py-4 text-xs font-mono text-text-secondary whitespace-nowrap">
-                    {job.started}
+                    {job.started_at || '-'}
                   </td>
                   <td className="px-6 py-4 text-xs font-mono text-text-secondary whitespace-nowrap">
-                    {job.duration}
+                    {job.duration || '-'}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">

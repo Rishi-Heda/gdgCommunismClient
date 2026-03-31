@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   MapPin, 
@@ -10,10 +10,60 @@ import {
   ShieldCheck,
   Star
 } from 'lucide-react';
-import { mockNodes } from '../data/mock';
 import ScrambleText from '../components/common/ScrambleText';
 
 const Contributors = () => {
+  const [nodes, setNodes] = useState([]);
+  const [networkStats, setNetworkStats] = useState({
+    active_nodes: '0',
+    network_total_tflops: '0 TFLOPS',
+    avg_cpu_load: '0%'
+  });
+  const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(2);
+  const [totalNodes, setTotalNodes] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [nodesRes, statsRes] = await Promise.all([
+          fetch(`http://localhost:8001/api/nodes?limit=${limit}`),
+          fetch('http://localhost:8001/api/network/stats')
+        ]);
+
+        if (nodesRes.ok && statsRes.ok) {
+          const nodesData = await nodesRes.json();
+          const statsData = await statsRes.json();
+
+          // Calculate average CPU load
+          const avgCpu = nodesData.nodes.length > 0
+            ? (nodesData.nodes.reduce((acc, node) => acc + node.metrics.cpu, 0) / nodesData.nodes.length).toFixed(1)
+            : '0';
+
+          setNodes(nodesData.nodes);
+          setTotalNodes(nodesData.total);
+          setNetworkStats({
+            active_nodes: statsData.active_nodes.toLocaleString(),
+            network_total_tflops: statsData.network_total_tflops,
+            avg_cpu_load: `${avgCpu}%`
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching network data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 15000); // Poll every 15s
+    return () => clearInterval(interval);
+  }, [limit]);
+
+  const handleLoadMore = () => {
+    setLimit(prev => prev + 6);
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'ONLINE': return 'text-status-green bg-status-green/10 border-status-green/20';
@@ -22,10 +72,10 @@ const Contributors = () => {
     }
   };
 
-  const networkStats = [
-    { label: 'Online Nodes', value: '1,192', icon: Zap, color: 'text-status-green' },
-    { label: 'Avg CPU Load', value: '42.8%', icon: Cpu, color: 'text-accent-primary' },
-    { label: 'Total TFLOPS', value: '94,200', icon: ShieldCheck, color: 'text-text-primary' },
+  const statsDisplay = [
+    { label: 'Online Nodes', value: networkStats.active_nodes, icon: Zap, color: 'text-status-green' },
+    { label: 'Avg CPU Load', value: networkStats.avg_cpu_load, icon: Cpu, color: 'text-accent-primary' },
+    { label: 'Total TFLOPS', value: networkStats.network_total_tflops, icon: ShieldCheck, color: 'text-text-primary' },
   ];
 
   return (
@@ -36,7 +86,7 @@ const Contributors = () => {
             <Users className="w-8 h-8 text-accent-primary" />
             <ScrambleText text="Contributor Network" />
           </h1>
-          <p className="text-text-secondary mt-1">1,248 active nodes across 14 global regions. Providing distributed compute for research.</p>
+          <p className="text-text-secondary mt-1">{networkStats.active_nodes} active nodes providing distributed compute for research.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -48,7 +98,7 @@ const Contributors = () => {
 
       {/* Network Stats Card Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {networkStats.map((stat) => (
+        {statsDisplay.map((stat) => (
           <div key={stat.label} className="bg-surface-card border border-[#222] rounded-2xl p-6 group hover:border-accent-primary transition-all">
             <div className="flex items-center gap-3 mb-4">
               <div className={`p-2 rounded-lg bg-surface-elevated border border-[#222] group-hover:border-accent-primary transition-all ${stat.color}`}>
@@ -95,82 +145,94 @@ const Contributors = () => {
 
       {/* Node Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...mockNodes, ...mockNodes, ...mockNodes].slice(0, 9).map((node, idx) => (
-          <div key={`${node.id}-${idx}`} className="bg-surface-card border border-[#222] rounded-3xl p-6 card-hover relative group">
-            <header className="flex justify-between items-start mb-6">
-              <div>
-                <div className="text-sm font-mono font-bold text-accent-primary">
-                  <ScrambleText text={node.id} />
-                </div>
-                <div className="flex items-center gap-1.5 mt-1 text-text-muted">
-                  <span className="text-sm">{node.location}</span>
-                </div>
-              </div>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${getStatusColor(node.status)}`}>
-                {node.status}
-              </span>
-            </header>
-            
-            <div className="space-y-4 mb-8">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#444] mb-2 flex items-center gap-2">
-                <Cpu className="w-3 h-3" /> Hardware Spec
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-surface-elevated rounded-xl p-3 border border-[#222] group-hover:border-[#333]">
-                  <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-1">CPU</div>
-                  <div className="text-[10px] font-medium truncate">{node.specs.cpu}</div>
-                </div>
-                <div className="bg-surface-elevated rounded-xl p-3 border border-[#222] group-hover:border-[#333]">
-                  <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-1">RAM</div>
-                  <div className="text-[10px] font-medium">{node.specs.ram}</div>
-                </div>
-              </div>
-              <div className="bg-surface-elevated rounded-xl p-3 border border-[#222] group-hover:border-[#333]">
-                <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-1">GPU Accelerator</div>
-                <div className="text-[10px] font-medium text-accent-primary">{node.specs.gpu}</div>
-              </div>
-            </div>
-
-            <div className="space-y-4 mb-8">
-               <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#444] mb-2">Live Metrics</div>
-               <div className="space-y-3">
-                  <div className="flex justify-between items-center px-1">
-                    <span className="text-[10px] text-text-muted font-mono uppercase tracking-tighter">Usage Intensity</span>
-                    <span className="text-[10px] text-accent-primary font-mono">{node.metrics.cpu}%</span>
-                  </div>
-                  <div className="h-1 bg-surface-elevated rounded-full overflow-hidden">
-                    <div className="h-full bg-accent-primary transition-all duration-1000" style={{ width: `${node.metrics.cpu}%` }} />
-                  </div>
-               </div>
-            </div>
-
-            <footer className="pt-6 border-t border-[#222] flex items-center justify-between">
-              <div className="flex gap-4">
+        {loading ? (
+          Array(6).fill(0).map((_, i) => (
+            <div key={i} className="bg-surface-card border border-[#222] rounded-3xl p-6 animate-pulse h-96" />
+          ))
+        ) : (
+          nodes.map((node) => (
+            <div key={node.id} className="bg-surface-card border border-[#222] rounded-3xl p-6 card-hover relative group">
+              <header className="flex justify-between items-start mb-6">
                 <div>
-                  <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-0.5">Completed</div>
-                  <div className="text-xs font-mono font-bold">{node.jobsCompleted}</div>
-                </div>
-                <div>
-                  <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-0.5">Reputation</div>
-                  <div className="text-xs font-mono font-bold flex items-center gap-1">
-                    {node.reputation} <Star className="w-3 h-3 text-status-yellow fill-status-yellow" />
+                  <div className="text-sm font-mono font-bold text-accent-primary">
+                    <ScrambleText text={node.id} />
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1 text-text-muted">
+                    <span className="text-sm">{node.location}</span>
                   </div>
                 </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${getStatusColor(node.status)}`}>
+                  {node.status}
+                </span>
+              </header>
+              
+              <div className="space-y-4 mb-8">
+                <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#444] mb-2 flex items-center gap-2">
+                  <Cpu className="w-3 h-3" /> Hardware Spec
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-surface-elevated rounded-xl p-3 border border-[#222] group-hover:border-[#333]">
+                    <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-1">CPU</div>
+                    <div className="text-[10px] font-medium truncate">{node.specs.cpu}</div>
+                  </div>
+                  <div className="bg-surface-elevated rounded-xl p-3 border border-[#222] group-hover:border-[#333]">
+                    <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-1">RAM</div>
+                    <div className="text-[10px] font-medium">{node.specs.ram}</div>
+                  </div>
+                </div>
+                <div className="bg-surface-elevated rounded-xl p-3 border border-[#222] group-hover:border-[#333]">
+                  <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-1">GPU Accelerator</div>
+                  <div className="text-[10px] font-medium text-accent-primary">{node.specs.gpu}</div>
+                </div>
               </div>
-              <div className="text-right">
-                <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-0.5">Uptime</div>
-                <div className="text-xs font-mono font-bold text-status-green">{node.uptime}</div>
+
+              <div className="space-y-4 mb-8">
+                 <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#444] mb-2">Live Metrics</div>
+                 <div className="space-y-3">
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[10px] text-text-muted font-mono uppercase tracking-tighter">Usage Intensity</span>
+                      <span className="text-[10px] text-accent-primary font-mono">{node.metrics.cpu}%</span>
+                    </div>
+                    <div className="h-1 bg-surface-elevated rounded-full overflow-hidden">
+                      <div className="h-full bg-accent-primary transition-all duration-1000" style={{ width: `${node.metrics.cpu}%` }} />
+                    </div>
+                 </div>
               </div>
-            </footer>
-          </div>
-        ))}
+
+              <footer className="pt-6 border-t border-[#222] flex items-center justify-between">
+                <div className="flex gap-4">
+                  <div>
+                    <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-0.5">Completed</div>
+                    <div className="text-xs font-mono font-bold">{node.jobs_completed}</div>
+                  </div>
+                  <div>
+                    <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-0.5">Reputation</div>
+                    <div className="text-xs font-mono font-bold flex items-center gap-1">
+                      {node.reputation} <Star className="w-3 h-3 text-status-yellow fill-status-yellow" />
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[8px] font-mono text-[#555] uppercase tracking-tighter mb-0.5">Uptime</div>
+                  <div className="text-xs font-mono font-bold text-status-green">{node.uptime}</div>
+                </div>
+              </footer>
+            </div>
+          ))
+        )}
       </div>
       
-      <div className="py-12 flex justify-center">
-        <button className="bg-surface-card border border-[#222] text-text-secondary px-8 py-3 rounded-xl font-bold hover:border-accent-primary hover:text-accent-primary transition-all flex items-center gap-2">
-          Load More Nodes <Zap className="w-4 h-4" />
-        </button>
-      </div>
+      {nodes.length < totalNodes && (
+        <div className="py-12 flex justify-center">
+          <button 
+            onClick={handleLoadMore}
+            disabled={loading}
+            className="bg-surface-card border border-[#222] text-text-secondary px-8 py-3 rounded-xl font-bold hover:border-accent-primary hover:text-accent-primary transition-all flex items-center gap-2 group disabled:opacity-50"
+          >
+            {loading ? 'Fetching...' : 'Load More Nodes'} <Zap className="w-4 h-4 group-hover:animate-pulse" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

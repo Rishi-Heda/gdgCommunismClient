@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
+import { useWealth } from '../context/WealthContext';
 import { 
   CheckCircle2, 
   Terminal, 
@@ -8,28 +9,28 @@ import {
   Cpu, 
   ArrowRight,
   ExternalLink,
-  ChevronLeft
+  XCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
   const { getCartTotal, clearCart } = useCart();
-  const [step, setStep] = useState('processing'); // processing, confirming, complete
+  const { spendHiveCoins } = useWealth();
+  const [step, setStep] = useState('processing'); // processing, complete, failed
   const [logs, setLogs] = useState([]);
+  const [checkoutResult, setCheckoutResult] = useState(null);
+  const [checkoutTotal] = useState(() => getCartTotal());
   const navigate = useNavigate();
-  const total = getCartTotal();
 
   const checkoutLogs = React.useMemo(() => [
     "Initializing secure transaction channel...",
     "Verifying Hive identity signature...",
     "Querying decentralized ledger for HC balance...",
-    "Deducting " + total.toLocaleString() + " HC from node-local-01...",
+    "Deducting " + checkoutTotal.toLocaleString() + " HC from node-local-01...",
     "Transferring compute assets to high-priority pool...",
     "Synchronizing neural weights across regional clusters...",
-    "Finalizing resource allocation...",
-    "Transaction confirmed in block #77a2...",
-    "ACQUISITION SUCCESSFUL"
-  ], [total]);
+    "Finalizing resource allocation..."
+  ], [checkoutTotal]);
 
   useEffect(() => {
     if (step === 'processing') {
@@ -40,15 +41,29 @@ const Checkout = () => {
           currentLog++;
         } else {
           clearInterval(interval);
-          setTimeout(() => setStep('complete'), 1000);
+
+          const result = spendHiveCoins(checkoutTotal);
+          setCheckoutResult(result);
+
+          if (result.success) {
+            setLogs((prev) => [...prev, 'Transaction confirmed in block #77a2...', 'ACQUISITION SUCCESSFUL']);
+            clearCart();
+            setTimeout(() => setStep('complete'), 1000);
+          } else {
+            setLogs((prev) => [
+              ...prev,
+              'TRANSACTION FAILED',
+              `YOU NEED ${result.missing.toLocaleString(undefined, { maximumFractionDigits: 2 })} MORE HIVECOINS`
+            ]);
+            setTimeout(() => setStep('failed'), 1000);
+          }
         }
       }, 600);
       return () => clearInterval(interval);
     }
-  }, [step, checkoutLogs]);
+  }, [step, checkoutLogs, checkoutTotal, spendHiveCoins, clearCart]);
 
   const handleFinish = () => {
-    clearCart();
     navigate('/dashboard');
   };
 
@@ -97,7 +112,7 @@ const Checkout = () => {
             <h1 className="text-3xl font-bold mb-3 tracking-tight">Acquisition Confirmed</h1>
             <p className="text-text-secondary mb-10 font-mono text-xs uppercase tracking-widest leading-relaxed">
               Assets have been allocated to your profile.<br />
-              Deduction of <span className="text-accent-primary font-bold">{total.toLocaleString()} HC</span> processed.
+              Deduction of <span className="text-accent-primary font-bold">{checkoutTotal.toLocaleString()} HC</span> processed.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10 text-left">
@@ -143,6 +158,38 @@ const Checkout = () => {
                <button className="text-[10px] font-mono text-text-muted flex items-center gap-1.5 hover:text-accent-primary transition-colors">
                   <ExternalLink className="w-3.5 h-3.5" /> View Transaction on Chain
                </button>
+            </div>
+          </div>
+        )}
+
+        {step === 'failed' && (
+          <div className="bg-surface-card border border-status-red/20 rounded-[40px] p-8 md:p-12 text-center animate-scale-in shadow-[0_0_50px_rgba(255,68,68,0.08)]">
+            <div className="w-24 h-24 bg-status-red/10 border border-status-red/30 rounded-full flex items-center justify-center mx-auto mb-8">
+              <XCircle className="w-12 h-12 text-status-red" />
+            </div>
+
+            <h1 className="text-3xl font-bold mb-3 tracking-tight">Transaction Failed</h1>
+            <p className="text-text-secondary mb-10 font-mono text-xs uppercase tracking-widest leading-relaxed">
+              You need{' '}
+              <span className="text-status-red font-bold">
+                {checkoutResult?.missing?.toLocaleString(undefined, { maximumFractionDigits: 2 }) || '0'}
+              </span>{' '}
+              more HiveCoins.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => navigate('/marketplace')}
+                className="flex-1 bg-accent-primary text-black py-4 rounded-2xl font-bold uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg"
+              >
+                Go to Marketplace
+              </button>
+              <button
+                onClick={() => navigate('/cart')}
+                className="flex-1 border-2 border-white/5 hover:border-white/20 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm transition-all text-text-secondary flex items-center justify-center gap-2"
+              >
+                Return to Cart <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         )}

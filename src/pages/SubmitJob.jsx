@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   PlusSquare, 
   Cpu, 
@@ -18,10 +19,58 @@ const SubmitJob = () => {
   const [gpuRequired, setGpuRequired] = useState(true);
   const [priority, setPriority] = useState('Standard');
   const [minRam, setMinRam] = useState(32);
+  const [jobName, setJobName] = useState('');
+  const [description, setDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = React.useRef(null);
   const { wealth } = useWealth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!jobName.trim()) {
+      alert('Please enter a job name.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('http://localhost:8001/api/jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: jobName,
+          type: jobType,
+          description: description,
+          submitter: 'user_41d', // Mocking current user ID
+          resources: {
+            cpu: 8, // Simplified for now
+            ram: minRam,
+            gpu: gpuRequired
+          },
+          priority: priority
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Job submitted successfully:', result);
+        navigate('/jobs');
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.detail || 'Failed to submit job'}`);
+      }
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Failed to connect to the network. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -52,7 +101,7 @@ const SubmitJob = () => {
         <p className="text-text-secondary mt-2">Configure your requirements and upload your workload to the HiveMind network.</p>
       </header>
 
-      <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-8" onSubmit={handleSubmit}>
         
         {/* Section 1 - Job Details */}
         <div className="bg-surface-card border border-[#222] rounded-2xl p-8 space-y-6">
@@ -68,6 +117,9 @@ const SubmitJob = () => {
                 type="text" 
                 placeholder="e.g. LLM-FineTune-Medical-v2" 
                 className="w-full bg-surface-elevated border border-[#222] rounded-xl px-4 py-3 outline-none focus:border-accent-primary transition-colors text-text-primary"
+                value={jobName}
+                onChange={(e) => setJobName(e.target.value)}
+                required
               />
             </div>
             
@@ -77,6 +129,8 @@ const SubmitJob = () => {
                 rows="3" 
                 placeholder="Describe the nature of your workload..." 
                 className="w-full bg-surface-elevated border border-[#222] rounded-xl px-4 py-3 outline-none focus:border-accent-primary transition-colors text-text-primary resize-none"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             
@@ -278,8 +332,12 @@ const SubmitJob = () => {
               </div>
             </div>
             
-            <button className="w-full sm:w-auto bg-accent-primary text-black px-10 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(250,255,0,0.1)]">
-              Submit Job <ArrowRight className="w-5 h-5" />
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="w-full sm:w-auto bg-accent-primary text-black px-10 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_30px_rgba(250,255,0,0.1)] disabled:opacity-50 disabled:grayscale"
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Job'} <ArrowRight className="w-5 h-5" />
             </button>
           </div>
         </div>

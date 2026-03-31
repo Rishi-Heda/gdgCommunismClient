@@ -1,14 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Shield, Wallet, Hexagon, Store } from 'lucide-react';
 import ScrambleText from '../components/common/ScrambleText';
 import FloatingHeader from '../components/layout/FloatingHeader';
 
 const LandingPage = () => {
+  const [liveStats, setLiveStats] = useState({
+    active_nodes: '0',
+    jobs_running: '0',
+    network_total_tflops: '0 TFLOPS'
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('http://localhost:8001/api/network/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setLiveStats({
+            active_nodes: data.active_nodes.toLocaleString(),
+            jobs_running: data.jobs_running.toLocaleString(),
+            network_total_tflops: data.network_total_tflops
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch landing stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   const stats = [
-    { label: 'Active Nodes', value: '1,248' },
-    { label: 'Jobs Running', value: '412' },
-    { label: 'Network Total', value: '94.2 TFLOPS' },
+    { label: 'Active Nodes', value: liveStats.active_nodes },
+    { label: 'Jobs Running', value: liveStats.jobs_running },
+    { label: 'Network Total', value: liveStats.network_total_tflops },
   ];
 
   const features = [
