@@ -87,13 +87,26 @@ async def submit_task_to_network(
 async def get_node_statistics():
     try:
         hardware_specs = get_hardware_specs()
-        node_history = get_node_history()
-
-        return {
-            "total_tasks_completed": node_history.get("tasks_completed", 0),
-            "total_compute_hours_donated": node_history.get("hours_donated", 0.0),
-            "credits_earned": node_history.get("credits", 0),
-            "current_hardware": hardware_specs,
-        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch stats: {str(e)}")
+        print(f"Warning: failed to detect hardware specs: {e}")
+        hardware_specs = {
+            "os": "Unknown",
+            "cpu": "Unknown CPU",
+            "cpu_cores_physical": 0,
+            "cpu_cores_logical": 0,
+            "ram_gb": 0.0,
+            "gpu": "Unavailable",
+        }
+
+    try:
+        node_history = get_node_history()
+    except Exception as e:
+        print(f"Warning: failed to read local node stats: {e}")
+        node_history = {}
+
+    return {
+        "total_tasks_completed": node_history.get("tasks_completed", 0),
+        "total_compute_hours_donated": node_history.get("hours_donated", 0.0),
+        "credits_earned": node_history.get("credits", 0),
+        "current_hardware": hardware_specs,
+    }

@@ -24,7 +24,7 @@ from src.network.client import (
 )
 from src.network.heartbeat import start_heartbeat_loop
 
-from src.hardware.idle_monitor import start_idle_monitor_loop
+from src.hardware.idle_monitor import is_idle_gate_open, start_idle_monitor_loop
 from src.docker_engine.container import execute_task
 from src.storage.file_manager import archive_execution_bundle, clean_workspace, extract_inputs, INPUTS_DIR
 from src.storage.local_db import increment_task_completed
@@ -39,7 +39,11 @@ async def task_polling_engine():
     while True:
         state = get_full_system_state()
 
-        if state["app_mode"] == AppMode.DONATE.value and state["engine_status"] == EngineStatus.READY.value:
+        if (
+            state["app_mode"] == AppMode.DONATE.value
+            and state["engine_status"] == EngineStatus.READY.value
+            and is_idle_gate_open()
+        ):
             print("Asking server for assignment...")
             task_data = await fetch_assignment()
 

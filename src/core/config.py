@@ -1,6 +1,7 @@
 import os
 import psutil
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from urllib.parse import urlparse
 
 _total_logical_cores = psutil.cpu_count(logical=True)
 _safe_cpu_limit = round(_total_logical_cores * 0.75, 1)
@@ -24,6 +25,7 @@ class Settings(BaseSettings):
     NODE_REGISTRATION_KEY: str = os.getenv("NODE_REGISTRATION_KEY", "")
     NODE_TOKEN: str = os.getenv("NODE_TOKEN", "")
     TCP_TRANSPORT_TIMEOUT_SECONDS: int = int(os.getenv("TCP_TRANSPORT_TIMEOUT_SECONDS", "60"))
+    TCP_TRANSPORT_HOST_OVERRIDE: str = os.getenv("TCP_TRANSPORT_HOST_OVERRIDE", "")
     DEFAULT_DOCKER_IMAGE: str = os.getenv("DEFAULT_DOCKER_IMAGE", "python:3.11-slim")
 
     IDLE_TIME_REQUIRED_SECONDS: int = 20
@@ -36,3 +38,8 @@ class Settings(BaseSettings):
 
 
 config = Settings()
+
+
+def master_server_host() -> str:
+    parsed = urlparse(config.MASTER_SERVER_URL)
+    return parsed.hostname or "localhost"

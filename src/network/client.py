@@ -1,6 +1,7 @@
 import asyncio
 import hashlib
 import json
+import ipaddress
 import socket
 import zipfile
 from pathlib import Path
@@ -8,7 +9,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from src.core.config import config
+from src.core.config import config, master_server_host
 from src.hardware.detectors import get_hardware_specs
 from src.storage.file_manager import INPUTS_DIR
 
@@ -16,6 +17,65 @@ http_client = httpx.AsyncClient(
     base_url=config.MASTER_SERVER_URL,
     timeout=30.0,
 )
+
+
+def _extract_node_token(payload: Any) -> Optional[str]:
+    if isinstance(payload, dict):
+        for key in ("auth_token", "node_token", "token"):
+            value = payload.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+
+        node_obj = payload.get("node")
+        if isinstance(node_obj, dict):
+            for key in ("auth_token", "node_token", "token"):
+                value = node_obj.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+
+        data_obj = payload.get("data")
+        if isinstance(data_obj, dict):
+            for key in ("auth_token", "node_token", "token"):
+                value = data_obj.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+
+    if isinstance(payload, list):
+        for item in payload:
+            token = _extract_node_token(item)
+            if token:
+                return token
+
+    return None
+
+
+def _extract_assignment(payload: Any) -> Optional[Dict[str, Any]]:
+    if isinstance(payload, dict):
+        if payload.get("assigned") is True:
+            for key in ("job", "assignment", "task"):
+                value = payload.get(key)
+                if isinstance(value, dict):
+                    return value
+
+        for key in ("job", "assignment", "task"):
+            value = payload.get(key)
+            if isinstance(value, dict) and (value.get("jobID") or value.get("job_id") or value.get("task_id")):
+                return value
+
+        if payload.get("jobID") or payload.get("job_id") or payload.get("task_id"):
+            return payload
+
+    return None
+
+
+def _normalize_assignment(task_data: Dict[str, Any]) -> Dict[str, Any]:
+    normalized = dict(task_data)
+    if "jobID" not in normalized:
+        if normalized.get("job_id"):
+            normalized["jobID"] = normalized["job_id"]
+        elif normalized.get("task_id"):
+            normalized["jobID"] = normalized["task_id"]
+    return normalized
 
 
 def _sha256_file(path: Path) -> str:
@@ -91,7 +151,36 @@ async def discover_tcp_transport() -> Dict[str, Any]:
     missing = required - payload.keys()
     if missing:
         raise RuntimeError(f"Missing TCP fields from server: {sorted(missing)}")
+
+    advertised_host = str(payload["host"]).strip()
+    payload["host"] = _normalize_tcp_host(advertised_host)
     return payload
+
+
+def _normalize_tcp_host(advertised_host: str) -> str:
+    if config.TCP_TRANSPORT_HOST_OVERRIDE:
+        return config.TCP_TRANSPORT_HOST_OVERRIDE.strip()
+
+    fallback_host = master_server_host()
+    lowered = advertised_host.lower()
+    if lowered in {"0.0.0.0", "127.0.0.1", "localhost", "::1"}:
+        print(
+            f"TCP transport advertised unreachable host '{advertised_host}'. "
+            f"Using master host '{fallback_host}' instead."
+        )
+        return fallback_host
+
+    try:
+        if ipaddress.ip_address(advertised_host).is_unspecified:
+            print(
+                f"TCP transport advertised unspecified host '{advertised_host}'. "
+                f"Using master host '{fallback_host}' instead."
+            )
+            return fallback_host
+    except ValueError:
+        pass
+
+    return advertised_host
 
 
 def _upload_zip_blocking(tcp_info: Dict[str, Any], artifact_path: Path, *, job_id: str) -> Dict[str, Any]:
@@ -192,11 +281,16 @@ async def register_node() -> bool:
     try:
         response = await http_client.post("/nodes/register", json=payload, headers=_node_registration_headers())
         response.raise_for_status()
-        nodes = response.json()
-        if isinstance(nodes, list) and nodes:
-            token = nodes[0].get("auth_token")
-            if token:
-                config.NODE_TOKEN = token
+        response_payload = response.json()
+        token = _extract_node_token(response_payload)
+        if token:
+            config.NODE_TOKEN = token
+            print(f"Updated node auth token for {config.NODE_UUID} from registration response.")
+        else:
+            print(
+                "Registration succeeded but no auth token was found in the response. "
+                "Continuing with existing NODE_TOKEN."
+            )
         print(f"Successfully registered node {config.NODE_UUID}.")
         return True
     except Exception as e:
@@ -209,7 +303,14 @@ async def send_heartbeat() -> bool:
         response = await http_client.post(f"/nodes/{config.NODE_UUID}/heartbeat", headers=_node_headers())
         response.raise_for_status()
         return True
-    except Exception:
+    except Exception as e:
+        detail = ""
+        if hasattr(e, "response") and getattr(e, "response") is not None:
+            try:
+                detail = f" | body={e.response.text}"
+            except Exception:
+                pass
+        print(f"Failed to send heartbeat: {e}{detail}")
         return False
 
 
@@ -218,10 +319,24 @@ async def fetch_assignment() -> Optional[Dict[str, Any]]:
         response = await http_client.get(f"/nodes/{config.NODE_UUID}/assignment", headers=_node_headers())
         response.raise_for_status()
         data = response.json()
-        if data.get("assigned"):
-            return data.get("job")
+        task_data = _extract_assignment(data)
+        if task_data:
+            normalized_task = _normalize_assignment(task_data)
+            print(
+                f"Server assigned job {normalized_task.get('jobID')} to node {config.NODE_UUID}. "
+                f"Raw assignment payload keys: {sorted(data.keys()) if isinstance(data, dict) else type(data).__name__}"
+            )
+            return normalized_task
+        print(f"No assignment returned for node {config.NODE_UUID}. Payload: {data}")
         return None
-    except Exception:
+    except Exception as e:
+        detail = ""
+        if hasattr(e, "response") and getattr(e, "response") is not None:
+            try:
+                detail = f" | body={e.response.text}"
+            except Exception:
+                pass
+        print(f"Failed to fetch assignment: {e}{detail}")
         return None
 
 
@@ -283,6 +398,7 @@ async def download_assigned_artifact(job_id: str) -> Path:
     if not config.NODE_TOKEN:
         raise RuntimeError("NODE_TOKEN missing. Register node first.")
     tcp_info = await discover_tcp_transport()
+    print(f"Downloading artifact for job {job_id} from {tcp_info['host']}:{tcp_info['port']}.")
     destination = INPUTS_DIR / "dataset.zip"
     await asyncio.to_thread(
         _download_zip_blocking,
@@ -302,6 +418,7 @@ async def upload_job_result_bundle(job_id: str, result_bundle_path: Path) -> Dic
         raise FileNotFoundError(f"Result bundle not found: {result_bundle_path}")
 
     tcp_info = await discover_tcp_transport()
+    print(f"Uploading result bundle for job {job_id} to {tcp_info['host']}:{tcp_info['port']}.")
     return await asyncio.to_thread(
         _upload_result_zip_blocking,
         tcp_info,

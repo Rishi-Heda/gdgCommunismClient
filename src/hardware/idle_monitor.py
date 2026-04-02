@@ -13,6 +13,12 @@ from src.core.config import config
 # Track CPU resting state
 _cpu_low_start_timestamp = None
 
+
+def is_idle_gate_open() -> bool:
+    if _cpu_low_start_timestamp is None:
+        return False
+    return (time.time() - _cpu_low_start_timestamp) >= config.IDLE_TIME_REQUIRED_SECONDS
+
 async def start_idle_monitor_loop():
     global _cpu_low_start_timestamp
     print("📊 CPU Monitor Started (Listening for idle states).")
